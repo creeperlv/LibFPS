@@ -1,6 +1,6 @@
 {
-	"name": "io.creeperlv.lib-fps",
-	"version": "1.0.0-pre",
+	"name": "io.creeperlv.libfps",
+	"version": "1.0.0-dev",
 	"license": "MIT",
 	"author": {
 		"name": "Creeper Lv"
