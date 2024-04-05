@@ -12,6 +12,11 @@ namespace LibFPS.Kernel.stdcs.stdlib
             return (void*)Marshal.AllocHGlobal(size);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T* malloc<T>(int size) where T : unmanaged
+        {
+            return (T*)Marshal.AllocHGlobal(size);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void free(void* ptr)
         {
             Marshal.FreeHGlobal((IntPtr)ptr);
