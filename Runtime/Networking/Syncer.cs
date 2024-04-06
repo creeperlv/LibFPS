@@ -16,7 +16,9 @@ namespace LibFPS.Networking
         public List<SyncedRoot> Roots;
         public System.Random random;
         public ulong Iteration = 0;
-        public float SyncInteval=1/30;
+        public float SyncInteval = 1 / 30;
+        public float TimeD;
+        public float LerpT;
         public void Start()
         {
             Instance = this;
@@ -57,10 +59,12 @@ namespace LibFPS.Networking
             {
 
             }
+
+            TimeD = 0;
         }
         public void Update()
         {
-
+            LerpT = TimeD / this.SyncInteval;
         }
     }
     public enum Command : byte

@@ -36,22 +36,19 @@ namespace LibFPS.Networking
         Vector3 _pos;
         Quaternion _rot;
         Vector3 _scal;
-        float timeD;
         public void Update()
         {
             if (thisIteration < Syncer.Instance.Iteration)
             {
-                timeD = 0;
                 _pos = pos;
                 _rot = rot;
                 _scal = scal;
             }
             else
             {
-                float t = Syncer.Instance.SyncInteval / timeD;
-                this.transform.position = Vector3.Lerp(_pos, pos, t);
-                this.transform.rotation = Quaternion.Lerp(_rot, rot, t);
-                this.transform.localScale = Vector3.Lerp(_scal, scal, t);
+                this.transform.position = Vector3.Lerp(_pos, pos, Syncer.Instance.LerpT);
+                this.transform.rotation = Quaternion.Lerp(_rot, rot, Syncer.Instance.LerpT);
+                this.transform.localScale = Vector3.Lerp(_scal, scal, Syncer.Instance.LerpT);
             }
         }
     }
