@@ -1,8 +1,10 @@
 {
-	"name": "io.creeperlv.libfps",
-	"version": "1.0.0-dev",
-	"license": "MIT",
-	"author": {
-		"name": "Creeper Lv"
-	}
+  "name": "io.creeperlv.libfps",
+  "version": "1.0.0-dev",
+  "license": "MIT",
+  "author": {
+    "name": "Creeper Lv"
+  },
+  "displayName": "LibFPS",
+  "description": "A Library to implement FPS game."
 }
