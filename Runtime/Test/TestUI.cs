@@ -7,7 +7,6 @@ namespace LibFPS
     public class TestUI : MonoBehaviour
     {
         public InputField Address;
-        public InputField Port;
         public Button Host;
         public Button Connect;
         void Start()
