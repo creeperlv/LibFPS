@@ -3,7 +3,7 @@ namespace LibFPS.Gameplay
 {
 	public class FPSController : MonoBehaviour
 	{
-		// Start is called once before the first execution of Update after the MonoBehaviour is created
+		public NetworkedCharacterController CharacterController;
 		void Start()
 		{
 
@@ -12,7 +12,6 @@ namespace LibFPS.Gameplay
 		// Update is called once per frame
 		void Update()
 		{
-
 		}
 	}
 

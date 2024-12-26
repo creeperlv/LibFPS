@@ -1,31 +1,37 @@
-using Mirror;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LibFPS
 {
-    public class TestUI : MonoBehaviour
-    {
-        public InputField Address;
-        public Button Host;
-        public Button Connect;
-        void Start()
-        {
-            Connect.onClick.AddListener(() =>
-            {
-                NetworkManager.singleton.networkAddress = Address.text;
-                NetworkManager.singleton.StartClient();
-            });
-            Host.onClick.AddListener(() =>
-            {
-                NetworkManager.singleton.networkAddress = Address.text;
-                NetworkManager.singleton.StartServer();
-            });
-        }
+	public class TestUI : MonoBehaviour
+	{
+		public InputField Address;
+		public InputField Port;
+		public Button Host;
+		public Button Connect;
+		public UnityTransport transport;
+		void Start()
+		{
+			Connect.onClick.AddListener(() =>
+			{
+				transport.ConnectionData.Address = Address.text;
+				transport.ConnectionData.Port = ushort.Parse(Port.text);
+				NetworkManager.Singleton.StartClient();
 
-        // Update is called once per frame
-        void Update()
-        {
-        }
-    }
+			});
+			Host.onClick.AddListener(() =>
+			{
+				transport.ConnectionData.Address = Address.text;
+				transport.ConnectionData.Port = ushort.Parse(Port.text);
+				NetworkManager.Singleton.StartHost();
+			});
+		}
+
+		// Update is called once per frame
+		void Update()
+		{
+		}
+	}
 }
