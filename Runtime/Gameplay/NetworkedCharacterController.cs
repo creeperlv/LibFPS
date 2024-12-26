@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LibFPS.Gameplay
@@ -7,6 +8,7 @@ namespace LibFPS.Gameplay
 	{
 		public Transform Head;
 		public Transform Self;
+		public List<Transform> BindableTransforms;
 		[Rpc(SendTo.Server)]
 		public void MoveRpc(Vector2 Input)
 		{
