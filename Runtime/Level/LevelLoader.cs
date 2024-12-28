@@ -1,14 +1,13 @@
 using Unity.Netcode;
-using UnityEngine;
 
-namespace LibFPS
+namespace LibFPS.Level
 {
-    public class LevelLoader : NetworkBehaviour
-    {
-        [Rpc(SendTo.Server)]
-        public void ReportLoadDoneRpc()
-        {
+	public class LevelLoader : NetworkBehaviour
+	{
+		[Rpc(SendTo.Server)]
+		public void ReportLoadDoneRpc()
+		{
 
-        }
-    }
+		}
+	}
 }
