@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace LibFPS.AnimationSystem
+{
+	public class TransformSync : MonoBehaviour
+	{
+		public List<TrackedTransforms> transforms = new List<TrackedTransforms>();
+		public bool UsePreBakedData;
+		public bool GlobalPos;
+		public void Clean()
+		{
+			for (int i = transforms.Count - 1; i >= 0; i--)
+			{
+				TrackedTransforms t = transforms[i];
+				if (t.Source == null || t.Target == null)
+				{
+					transforms.RemoveAt(i);
+				}
+			}
+		}
+		public void CalcDelta()
+		{
+			if (GlobalPos)
+			{
+				foreach (var transform in transforms)
+				{
+					transform.PositionDelta = transform.Target.position - transform.Source.position;
+					transform.RotationDelta = (Quaternion.Euler(transform.Target.eulerAngles - transform.Source.eulerAngles));
+				}
+			}
+			else
+			{
+				foreach (var transform in transforms)
+				{
+					transform.PositionDelta = transform.Target.localPosition - transform.Source.localPosition;
+					transform.RotationDelta = (Quaternion.Euler(transform.Target.eulerAngles - transform.Source.eulerAngles));
+				}
+			}
+		}
+		public void Start()
+		{
+			if (!UsePreBakedData) CalcDelta();
+		}
+
+		public void Update()
+		{
+			if (GlobalPos)
+			{
+				foreach (var item in transforms)
+				{
+					item.Target.position = item.Source.position + item.PositionDelta;
+					item.Target.rotation = item.Source.rotation * item.RotationDelta;
+				}
+			}
+			else
+			{
+				foreach (var item in transforms)
+				{
+					item.Target.localPosition = item.Source.localPosition + item.PositionDelta;
+					item.Target.rotation = item.Source.rotation * item.RotationDelta;
+				}
+			}
+		}
+	}
+	[Serializable]
+	public class TrackedTransforms
+	{
+		public Transform Source;
+		public Transform Target;
+		public Vector3 PositionDelta;
+		public Quaternion RotationDelta;
+	}
+}

@@ -1,0 +1,16 @@
+{
+    "name": "libfps.editor",
+    "rootNamespace": "LibFPS",
+    "references": [
+        "GUID:1ab9e4b64e30d7241ace01ab32d7484e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
