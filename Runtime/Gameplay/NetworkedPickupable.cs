@@ -2,7 +2,7 @@
 
 namespace LibFPS.Gameplay
 {
-	public class NetworkedPickupable : NetworkBehaviour
+	public class NetworkedPickupable : AttachableObject
 	{
 		[Rpc(SendTo.Server)]
 		public void TryPickRpc(int BindedTransform, RpcParams rpcParams)
