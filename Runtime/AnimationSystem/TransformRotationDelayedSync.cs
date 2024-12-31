@@ -12,11 +12,12 @@ namespace LibFPS.AnimationSystem
 		public float Speed = 10;
 		public bool WillTriggerAnimation;
 		public Animator TargetAnimator;
-		public List<string> AnimationTrigger;
+		public List<string> PositiveAnimationTrigger;
+		public List<string> NegativeAnimationTrigger;
 		public bool IsLocalSpace = true;
 		public bool IsMoving;
 		public float Termination = 2;
-		public bool PauseAutoDSync=false;
+		public bool PauseAutoDSync = false;
 		public void Sync()
 		{
 
@@ -53,15 +54,16 @@ namespace LibFPS.AnimationSystem
 				Src = Source.rotation;
 				Tgt = Target.rotation;
 			}
-			angle = Quaternion.Angle(Src , Tgt);
+			angle = Vector3.SignedAngle(Target.forward, Source.forward, Vector3.up);
+			float absAngle = Mathf.Abs(angle);
 			if (IsMoving)
 			{
-				if (angle <= Termination)
+				if (absAngle <= Termination)
 				{
 					IsMoving = false;
 					return;
 				}
-				var f_q = Quaternion.RotateTowards(Tgt , Src , angle * Speed * Time.deltaTime);
+				var f_q = Quaternion.RotateTowards(Tgt, Src, absAngle * Speed * Time.deltaTime);
 				if (IsLocalSpace)
 				{
 					Target.localRotation = f_q;
@@ -70,14 +72,17 @@ namespace LibFPS.AnimationSystem
 			}
 			else
 			{
-				if (angle >= Tolerance)
+				if (absAngle >= Tolerance)
 				{
 					IsMoving = true;
 					if (WillTriggerAnimation)
 					{
 						if (TargetAnimator != null)
 						{
-							TargetAnimator.SetTrigger(AnimationTrigger.PickOne());
+							if (angle > 0)
+								TargetAnimator.SetTrigger(PositiveAnimationTrigger.PickOne());
+							else
+								TargetAnimator.SetTrigger(NegativeAnimationTrigger.PickOne());
 						}
 					}
 				}
