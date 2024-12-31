@@ -8,6 +8,7 @@ namespace LibFPS.Gameplay
 	{
 		public Transform Head;
 		public Transform Self;
+		public CharacterController CharacterController;
 		public List<Transform> BindableTransforms;
 		[Rpc(SendTo.Server)]
 		public void MoveRpc(Vector2 Input)
