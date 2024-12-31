@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LibFPS.Kernel.Utils;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LibFPS.AnimationSystem
@@ -72,12 +73,12 @@ namespace LibFPS.AnimationSystem
 				if (angle >= Tolerance)
 				{
 					IsMoving = true;
-				}
-				if (WillTriggerAnimation)
-				{
-					if (TargetAnimator != null)
+					if (WillTriggerAnimation)
 					{
-						//TargetAnimator.SetTrigger(AnimationTrigger.PickOne());
+						if (TargetAnimator != null)
+						{
+							TargetAnimator.SetTrigger(AnimationTrigger.PickOne());
+						}
 					}
 				}
 			}
