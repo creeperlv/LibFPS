@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace LibFPS.Kernel.Utils
 {
@@ -30,17 +29,17 @@ namespace LibFPS.Kernel.Utils
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int NextInt(int Upper)
 		{
-			return random.Next(0 , Upper);
+			return random.Next(0, Upper);
 		}
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 
-		public static int NextInt(int Lower , int Upper) => random.Next(Lower , Upper);
+		public static int NextInt(int Lower, int Upper) => random.Next(Lower, Upper);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool NextInt(int Lower , int Upper , out int result)
+		public static bool NextInt(int Lower, int Upper, out int result)
 		{
 			if (Lower < Upper)
 			{
-				result = random.Next(Lower , Upper);
+				result = random.Next(Lower, Upper);
 				return true;
 
 			}
@@ -52,7 +51,7 @@ namespace LibFPS.Kernel.Utils
 		}
 		public static T PickOne<T>(this List<T> __list)
 		{
-			return __list [ NextInt(__list.Count) ];
+			return __list[NextInt(__list.Count)];
 		}
 	}
 }

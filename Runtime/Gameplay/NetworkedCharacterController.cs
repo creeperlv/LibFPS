@@ -6,9 +6,7 @@ namespace LibFPS.Gameplay
 {
 	public class NetworkedCharacterController : NetworkBehaviour
 	{
-		public Transform Head;
-		public Transform Self;
-		public CharacterController CharacterController;
+		public Biped biped;
 		public List<Transform> BindableTransforms;
 		[Rpc(SendTo.Server)]
 		public void MoveRpc(Vector2 Input)
@@ -16,7 +14,7 @@ namespace LibFPS.Gameplay
 
 		}
 		[Rpc(SendTo.Server)]
-		public void LookRpc(float Horizontal,float Vertical)
+		public void LookRpc(float Horizontal, float Vertical)
 		{
 
 		}
