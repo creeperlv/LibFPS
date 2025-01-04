@@ -7,16 +7,29 @@ namespace LibFPS.Gameplay
 	public class NetworkedCharacterController : NetworkBehaviour
 	{
 		public Biped biped;
+		public NetworkVariable<Vector2> MoveDirection = new NetworkVariable<Vector2>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+		public NetworkVariable<bool> WillRun = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public List<Transform> BindableTransforms;
-		[Rpc(SendTo.Server)]
-		public void MoveRpc(Vector2 Input)
+		public void Update()
 		{
-
+			if (IsClient == false && IsServer == false)
+			{
+				ApplyData();
+			}
+			else if (IsHost)
+			{
+				ApplyData();
+			}
 		}
-		[Rpc(SendTo.Server)]
-		public void LookRpc(float Horizontal, float Vertical)
+		private void ApplyData()
 		{
 
+			biped.MoveDirection = MoveDirection.Value;
+			biped.IsRunning = WillRun.Value;
+		}
+		public void Move(float h, float v)
+		{
+			this.MoveDirection.Value = new Vector2(h, v);
 		}
 	}
 }

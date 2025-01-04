@@ -21,23 +21,16 @@ namespace LibFPS.Gameplay
 			{
 				var h = Input.GetAxis("Mouse X");
 				var v = Input.GetAxis("Mouse Y");
-				NetCharacterController.biped.Self.Rotate(new Vector3(0, h * MouseHorizontalSpeed * Time.deltaTime, 0));
-				NetCharacterController.biped.Head.Rotate(new Vector3(v * MouseVerticalSpeed * Time.deltaTime, 0, 0));
-				var her = NetCharacterController.biped.Head.localEulerAngles;
-				if (her.x > 180)
-				{
-					her.x = Mathf.Max(her.x, 270 + VerticalRange.x);
-				}
-				else
-				{
-					her.x = Mathf.Min(her.x, 90 - VerticalRange.x);
-				}
-				NetCharacterController.biped.Head.localEulerAngles = her;
+				NetCharacterController.biped.Rotate(h * MouseHorizontalSpeed, v * MouseVerticalSpeed);
+			}
+			{
+				NetCharacterController.WillRun.Value = (Input.GetButton("Run"));
 			}
 			{
 				var h = Input.GetAxis("Horizontal");
 				var v = Input.GetAxis("Vertical");
-				NetCharacterController.biped.Move(h, v);
+				//NetCharacterController.biped.Move(h, v);
+				NetCharacterController.Move(h, v);
 			}
 		}
 	}
