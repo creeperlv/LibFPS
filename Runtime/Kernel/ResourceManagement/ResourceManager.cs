@@ -11,6 +11,9 @@ namespace LibFPS.Kernel.ResourceManagement
 		public bool PersistentResource;
 		public ResourceManagerLifetime resourceManagerLifetime;
 		public KVList<string, KVList<string, RuntimeAnimatorController>> animations;
+		public KVList<string, GameObject> spawnableObjects;
+		private Dictionary<string, Dictionary<string, RuntimeAnimatorController>> AnimationControllers;
+		private Dictionary<string, GameObject> SpawnableObjects;
 		public List<ResourceManager> SubManagers;
 		[NonSerialized]
 		[HideInInspector]
@@ -43,7 +46,36 @@ namespace LibFPS.Kernel.ResourceManagement
 				default:
 					break;
 			}
-
+			AnimationControllers = animations.Map((a) => a, (b) => b.ToDictionary());
+			SpawnableObjects = spawnableObjects.ToDictionary();
+		}
+		public bool TryQueryAnimationControllerRecursively(string CharacterID, string AnimationControllerKey, out RuntimeAnimatorController AnimatorController)
+		{
+			if (AnimationControllers.TryGetValue(CharacterID, out var animationControllers))
+			{
+				if (animationControllers.TryGetValue(AnimationControllerKey, out AnimatorController))
+				{
+					return true;
+				}
+			}
+			foreach (var item in SubManagers)
+			{
+				if (item.TryQueryAnimationControllerRecursively(CharacterID, AnimationControllerKey, out AnimatorController))
+				{
+					return true;
+				}
+			}
+			AnimatorController = null;
+			return false;
+		}
+		public static bool TryQueryAnimationController(string CharacterID, string AnimationControllerKey, out RuntimeAnimatorController AnimatorController)
+		{
+			if (Instance == null)
+			{
+				AnimatorController = null;
+				return false;
+			}
+			return Instance.TryQueryAnimationControllerRecursively(CharacterID, AnimationControllerKey, out AnimatorController);
 		}
 		private void OnDestroy()
 		{

@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using LibFPS.Kernel.ResourceManagement;
+using UnityEngine;
 
 namespace LibFPS.Gameplay
 {
 	public class Biped : MonoBehaviour
 	{
+		public string BipedName;
 		public CharacterController CharacterController;
 		public Transform Head;
 		public Transform Self;
@@ -18,6 +20,19 @@ namespace LibFPS.Gameplay
 		public string Leftward = "Leftward";
 		public string Rightward = "Rightward";
 		public bool IsRunning;
+		public string UpperAnimatorAnimationController;
+		private string __UpperAnimatorAnimationController;
+		private void Update()
+		{
+			if (__UpperAnimatorAnimationController != UpperAnimatorAnimationController)
+			{
+				if (ResourceManager.TryQueryAnimationController(BipedName, UpperAnimatorAnimationController, out var __controller))
+				{
+					UpperAnimator.runtimeAnimatorController = __controller;
+					__UpperAnimatorAnimationController = UpperAnimatorAnimationController;
+				}
+			}
+		}
 		public void Move(float h, float v)
 		{
 			if (h == 0 && v == 0)
