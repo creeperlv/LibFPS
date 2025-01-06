@@ -72,6 +72,11 @@ namespace LibFPS.Gameplay.HUDSystem
 					}
 				}
 			}
+			if (FPSController.Instance != null)
+			{
+				HP.fillAmount = FPSController.Instance.GetHPPercent();
+				Shield.fillAmount = FPSController.Instance.GetShieldPercent();
+			}
 		}
 	}
 }

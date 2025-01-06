@@ -7,6 +7,7 @@ namespace LibFPS.Gameplay
 	public class NetworkedCharacterController : NetworkBehaviour
 	{
 		public Biped biped;
+		public BaseEntity Entity;
 		public NetworkVariable<Vector2> MoveDirection = new NetworkVariable<Vector2>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public NetworkVariable<bool> WillRun = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public List<Transform> BindableTransforms;
