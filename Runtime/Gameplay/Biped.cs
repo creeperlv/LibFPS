@@ -1,4 +1,5 @@
-﻿using LibFPS.Kernel.ResourceManagement;
+﻿using LibFPS.AnimationSystem;
+using LibFPS.Kernel.ResourceManagement;
 using UnityEngine;
 
 namespace LibFPS.Gameplay
@@ -7,6 +8,7 @@ namespace LibFPS.Gameplay
 	{
 		public string BipedName;
 		public CharacterController CharacterController;
+		public TransformRotationDelayedSync Syncer;
 		public Transform Head;
 		public Transform Self;
 		public Animator UpperAnimator;
@@ -63,15 +65,16 @@ namespace LibFPS.Gameplay
 			{
 				UpperAnimator.SetBool(AnimatorWalking, false);
 				UpperAnimator.SetBool(AnimatorRunning, false);
-				UpperAnimator.SetBool(AnimatorCrouch, false);
+				UpperAnimator.SetBool(AnimatorCrouch, IsCrouch);
 				LowerAnimator.SetBool(AnimatorWalking, false);
 				LowerAnimator.SetBool(AnimatorRunning, false);
-				LowerAnimator.SetBool(AnimatorCrouch, false);
-
+				LowerAnimator.SetBool(AnimatorCrouch, IsCrouch);
+				Syncer.IsActiveMoving = false;
 			}
 			else
 			{
 				__IsRunning = IsRunning;
+				Syncer.IsActiveMoving = true;
 				var av = Mathf.Abs(v);
 				var ah = Mathf.Abs(h);
 				if (IsCrouch) __IsRunning = false;
@@ -119,8 +122,10 @@ namespace LibFPS.Gameplay
 				}
 				UpperAnimator.SetBool(AnimatorWalking, true);
 				UpperAnimator.SetBool(AnimatorRunning, __IsRunning);
+				UpperAnimator.SetBool(AnimatorCrouch, IsCrouch);
 				LowerAnimator.SetBool(AnimatorWalking, true);
 				LowerAnimator.SetBool(AnimatorRunning, __IsRunning);
+				LowerAnimator.SetBool(AnimatorCrouch, IsCrouch);
 			}
 			var t = Self;
 			CharacterController.SimpleMove(t.forward * v + t.right * h + t.up * -10);

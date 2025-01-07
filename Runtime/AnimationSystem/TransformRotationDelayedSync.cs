@@ -16,6 +16,7 @@ namespace LibFPS.AnimationSystem
 		public List<string> NegativeAnimationTrigger;
 		public bool IsLocalSpace = true;
 		public bool IsMoving;
+		public bool IsActiveMoving;
 		public float Termination = 2;
 		public bool PauseAutoDSync = false;
 		public void Sync()
@@ -56,6 +57,15 @@ namespace LibFPS.AnimationSystem
 			}
 			angle = Vector3.SignedAngle(Target.forward, Source.forward, Vector3.up);
 			float absAngle = Mathf.Abs(angle);
+			if (IsActiveMoving)
+			{
+				if (IsLocalSpace)
+				{
+					Target.localRotation = Src;
+				}
+				else Target.rotation = Src;
+				return;
+			}
 			if (IsMoving)
 			{
 				if (absAngle <= Termination)
