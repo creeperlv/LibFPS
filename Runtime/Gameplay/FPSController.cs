@@ -50,6 +50,7 @@ namespace LibFPS.Gameplay
 			}
 			{
 				NetCharacterController.WillRun.Value = (Input.GetButton("Run"));
+				NetCharacterController.WillCrouch.Value = (Input.GetButton("Crouch"));
 			}
 			{
 				var h = Input.GetAxis("Horizontal");

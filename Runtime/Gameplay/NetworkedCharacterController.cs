@@ -10,6 +10,7 @@ namespace LibFPS.Gameplay
 		public BaseEntity Entity;
 		public NetworkVariable<Vector2> MoveDirection = new NetworkVariable<Vector2>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public NetworkVariable<bool> WillRun = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+		public NetworkVariable<bool> WillCrouch = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public List<Transform> BindableTransforms;
 		public void Update()
 		{
@@ -27,6 +28,7 @@ namespace LibFPS.Gameplay
 
 			biped.MoveDirection = MoveDirection.Value;
 			biped.IsRunning = WillRun.Value;
+			biped.IsCrouch = WillCrouch.Value;
 		}
 		public void Move(float h, float v)
 		{

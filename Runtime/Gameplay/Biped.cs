@@ -13,13 +13,16 @@ namespace LibFPS.Gameplay
 		public Animator LowerAnimator;
 		public float WalkSpeed;
 		public float RunSpeed;
+		public float CrouchSpeed;
 		public string AnimatorWalking = "IsWalking";
 		public string AnimatorRunning = "IsRunning";
+		public string AnimatorCrouch = "IsCrouch";
 		public string Forward = "Forward";
 		public string Backward = "Backward";
 		public string Leftward = "Leftward";
 		public string Rightward = "Rightward";
 		public bool IsRunning;
+		public bool IsCrouch;
 		public Vector2 VerticalRange;
 		public string UpperAnimatorAnimationController;
 		private string __UpperAnimatorAnimationController;
@@ -60,8 +63,10 @@ namespace LibFPS.Gameplay
 			{
 				UpperAnimator.SetBool(AnimatorWalking, false);
 				UpperAnimator.SetBool(AnimatorRunning, false);
+				UpperAnimator.SetBool(AnimatorCrouch, false);
 				LowerAnimator.SetBool(AnimatorWalking, false);
 				LowerAnimator.SetBool(AnimatorRunning, false);
+				LowerAnimator.SetBool(AnimatorCrouch, false);
 
 			}
 			else
@@ -69,6 +74,7 @@ namespace LibFPS.Gameplay
 				__IsRunning = IsRunning;
 				var av = Mathf.Abs(v);
 				var ah = Mathf.Abs(h);
+				if (IsCrouch) __IsRunning = false;
 				if (av > ah)
 				{
 					if (v > 0)
@@ -95,6 +101,12 @@ namespace LibFPS.Gameplay
 						SetDirection(LowerAnimator, false, false, true, false);
 					}
 				}
+				if (IsCrouch)
+				{
+					h *= CrouchSpeed;
+					v *= CrouchSpeed;
+				}
+				else
 				if (__IsRunning)
 				{
 					h *= RunSpeed;
