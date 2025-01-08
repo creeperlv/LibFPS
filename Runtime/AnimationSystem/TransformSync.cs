@@ -7,6 +7,7 @@ namespace LibFPS.AnimationSystem
 	public class TransformSync : MonoBehaviour
 	{
 		public List<TrackedTransforms> transforms = new List<TrackedTransforms>();
+		public Transform OperateBase;
 		public bool UsePreBakedData;
 		public bool GlobalPos;
 		public void Clean()
@@ -18,6 +19,34 @@ namespace LibFPS.AnimationSystem
 				{
 					transforms.RemoveAt(i);
 				}
+			}
+		}
+		public void FillTargetName()
+		{
+			foreach (TrackedTransforms t in transforms)
+			{
+				t.TargetName = t.Target.name;
+			}
+		}
+		Transform RecursiveFind(Transform t, string name)
+		{
+			for (int i = 0; i < t.childCount; i++)
+			{
+				var item = t.GetChild(i);
+				if (item.name == name) return item;
+				var o = RecursiveFind(item, name);
+				if (o != null)
+				{
+					return o;
+				}
+			}
+			return null;
+		}
+		public void MatchTargetByName()
+		{
+			foreach (TrackedTransforms t in transforms)
+			{
+				t.Target = RecursiveFind(OperateBase, t.TargetName);
 			}
 		}
 		public void CalcDelta()
@@ -69,6 +98,7 @@ namespace LibFPS.AnimationSystem
 	{
 		public Transform Source;
 		public Transform Target;
+		public string TargetName;
 		public Vector3 PositionDelta;
 		public Quaternion RotationDelta;
 	}

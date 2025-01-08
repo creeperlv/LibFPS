@@ -44,17 +44,17 @@ namespace LibFPS.Gameplay
 		}
 		public void Rotate(float h, float v)
 		{
-
 			Self.Rotate(new Vector3(0, h * Time.deltaTime, 0));
 			Head.Rotate(new Vector3(v * Time.deltaTime, 0, 0));
 			var her = Head.localEulerAngles;
-			if (her.x > 180)
+			var x = her.x % 360;
+			if (x > 180)
 			{
-				her.x = Mathf.Max(her.x, 270 + VerticalRange.x);
+				her.x = Mathf.Max(x, 270 + VerticalRange.x);
 			}
 			else
 			{
-				her.x = Mathf.Min(her.x, 90 - VerticalRange.x);
+				her.x = Mathf.Min(x, 90 - VerticalRange.x);
 			}
 			Head.localEulerAngles = her;
 		}

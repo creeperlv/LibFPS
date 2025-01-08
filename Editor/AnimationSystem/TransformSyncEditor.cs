@@ -19,6 +19,14 @@ namespace LibFPS.Editor.AnimationSystem
 			{
 				Target_Base.CalcDelta();
 			}
+			if (GUILayout.Button("Fill Target Name"))
+			{
+				Target_Base.FillTargetName();
+			}
+			if (GUILayout.Button("Match Target By Name"))
+			{
+				Target_Base.MatchTargetByName();
+			}
 			if (GUILayout.Button("Live Preview"))
 			{
 				PreviewTransformSync.OpenWindow(Target_Base);
