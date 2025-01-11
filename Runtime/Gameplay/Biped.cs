@@ -16,6 +16,9 @@ namespace LibFPS.Gameplay
 		public float WalkSpeed;
 		public float RunSpeed;
 		public float CrouchSpeed;
+		public float JumpVelocity;
+		public float VSpeedCap;
+		public float Gravity;
 		public string AnimatorWalking = "IsWalking";
 		public string AnimatorRunning = "IsRunning";
 		public string AnimatorCrouch = "IsCrouch";
@@ -29,7 +32,10 @@ namespace LibFPS.Gameplay
 		public string UpperAnimatorAnimationController;
 		private string __UpperAnimatorAnimationController;
 		public Vector2 MoveDirection;
+		public bool IsInVehicle;
 		private bool __IsRunning;
+		private bool __IsGrounded;
+		private float __IdealVSpeed;
 		private void Update()
 		{
 			if (__UpperAnimatorAnimationController != UpperAnimatorAnimationController)
@@ -41,6 +47,12 @@ namespace LibFPS.Gameplay
 				}
 			}
 			Move(MoveDirection.x, MoveDirection.y);
+			__IsGrounded = CharacterController.isGrounded;
+		}
+		bool TryJump = false;
+		public void Jump()
+		{
+			TryJump = true;
 		}
 		public void Rotate(float h, float v)
 		{
@@ -128,7 +140,19 @@ namespace LibFPS.Gameplay
 				LowerAnimator.SetBool(AnimatorCrouch, IsCrouch);
 			}
 			var t = Self;
-			CharacterController.SimpleMove(t.forward * v + t.right * h + t.up * -10);
+			CharacterController.Move((t.forward * v + t.right * h) * Time.deltaTime);// + t.up * -10);
+			if (__IsGrounded)
+			{
+				if (TryJump)
+					__IdealVSpeed = CharacterController.velocity.y + JumpVelocity;
+			}
+			else
+			{
+			}
+			CharacterController.Move(t.up * __IdealVSpeed * Time.deltaTime);
+			__IdealVSpeed += Gravity * Time.deltaTime;
+			__IdealVSpeed = Mathf.Max(Mathf.Min(__IdealVSpeed, VSpeedCap), -VSpeedCap);
+			TryJump = false;
 		}
 		public void SetDirection(Animator animator, bool FWD, bool BWD, bool LWD, bool RWD)
 		{

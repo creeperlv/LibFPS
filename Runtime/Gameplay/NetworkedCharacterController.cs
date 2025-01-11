@@ -30,6 +30,30 @@ namespace LibFPS.Gameplay
 			biped.IsRunning = WillRun.Value;
 			biped.IsCrouch = WillCrouch.Value;
 		}
+		public void Jump()
+		{
+			if (IsClient == false && IsServer == false)
+			{
+				RealJump();
+			}
+			else if (IsHost)
+			{
+				RealJump();
+			}
+			else
+			{
+				JumpRpc();
+			}
+		}
+		private void RealJump()
+		{
+			biped.Jump();
+		}
+		[Rpc(SendTo.Server)]
+		void JumpRpc()
+		{
+			RealJump();
+		}
 		public void Move(float h, float v)
 		{
 			this.MoveDirection.Value = new Vector2(h, v);
