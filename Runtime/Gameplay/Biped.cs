@@ -26,6 +26,8 @@ namespace LibFPS.Gameplay
 		public string Backward = "Backward";
 		public string Leftward = "Leftward";
 		public string Rightward = "Rightward";
+		public string IsFloating = "IsFloating";
+		public string Floating = "Floating";
 		public bool IsRunning;
 		public bool IsCrouch;
 		public Vector2 VerticalRange;
@@ -35,6 +37,7 @@ namespace LibFPS.Gameplay
 		public bool IsInVehicle;
 		private bool __IsRunning;
 		private bool __IsGrounded;
+		private bool __LastIsGrounded;
 		private float __IdealVSpeed;
 		private void Update()
 		{
@@ -140,6 +143,19 @@ namespace LibFPS.Gameplay
 				LowerAnimator.SetBool(AnimatorCrouch, IsCrouch);
 			}
 			var t = Self;
+			{
+				UpperAnimator.SetBool(IsFloating, !__IsGrounded);
+				LowerAnimator.SetBool(IsFloating, !__IsGrounded);
+			}
+			if (__LastIsGrounded != __IsGrounded)
+			{
+				__LastIsGrounded = __IsGrounded;
+				if (!__IsGrounded)
+				{
+					UpperAnimator.SetTrigger(Floating);
+					LowerAnimator.SetTrigger(Floating);
+				}
+			}
 			CharacterController.Move((t.forward * v + t.right * h) * Time.deltaTime);// + t.up * -10);
 			if (__IsGrounded)
 			{
