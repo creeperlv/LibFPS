@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using log4net.Util;
+using Unity.Netcode;
 
 namespace LibFPS.Gameplay
 {
@@ -7,6 +8,9 @@ namespace LibFPS.Gameplay
 		public float MaxAmmo;
 		public NetworkVariable<float> Ammo;
 		public NetworkVariable<bool> IsFireDown = new NetworkVariable<bool>(false, writePerm: NetworkVariableWritePermission.Owner);
+		public Transform FirePoint;
+		public int BulletID;
+		public int WeaponDef;
 	}
 	public enum WeaponMode
 	{
