@@ -6,6 +6,7 @@ namespace LibFPS.Gameplay.Data
     public class Bullet : MonoBehaviour
     {
         public float MoveSpeed;
+        public float TrackIntensity;
         public int HitEffect;
     }
     [Serializable]
