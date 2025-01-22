@@ -1,5 +1,7 @@
 ﻿using LibFPS.AnimationSystem;
+using LibFPS.Kernel.Data;
 using LibFPS.Kernel.ResourceManagement;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LibFPS.Gameplay
@@ -39,8 +41,11 @@ namespace LibFPS.Gameplay
 		private bool __IsGrounded;
 		private bool __LastIsGrounded;
 		private float __IdealVSpeed;
+		public Dictionary<string,Transform> BindableDict;
+		public KVList<string,Transform> BindableTransforms;
 		private void Update()
 		{
+			BindableDict=BindableTransforms.ToDictionary();
 			if (__UpperAnimatorAnimationController != UpperAnimatorAnimationController)
 			{
 				if (ResourceManager.TryQueryAnimationController(BipedName, UpperAnimatorAnimationController, out var __controller))
