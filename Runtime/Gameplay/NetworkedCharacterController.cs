@@ -44,6 +44,31 @@ namespace LibFPS.Gameplay
 				JumpRpc();
 			}
 		}
+		private void __use()
+		{
+
+		}
+		public void Use()
+		{
+
+			if (IsClient == false && IsServer == false)
+			{
+				__use();
+			}
+			else if (IsHost)
+			{
+				__use();
+			}
+			else
+			{
+				UseRpc();
+			}
+		}
+		[Rpc(SendTo.Server)]
+		private void UseRpc()
+		{
+			__use();
+		}
 		private void RealJump()
 		{
 			biped.Jump();

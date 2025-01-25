@@ -2,13 +2,20 @@
 
 namespace LibFPS.Gameplay
 {
-	public class NetworkedPickupable : AttachableObject
+	public class NetworkedPickupable : AttachableObject, IInteractable
 	{
 		public string AnimatorKey;
-		[Rpc(SendTo.Server)]
-		public void TryPickRpc(int BindedTransform, RpcParams rpcParams)
-		{
 
+		public void Interact(Biped Actor)
+		{
+		}
+
+		public void InteractStart(Biped Actor)
+		{
+		}
+
+		public void InteractStop(Biped Actor)
+		{
 		}
 	}
 }
