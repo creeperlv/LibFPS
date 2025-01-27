@@ -5,6 +5,8 @@ namespace LibFPS.Gameplay
 {
 	public class NetworkedWeapon : NetworkedPickupable
 	{
+		public WeaponType WeaponType;
+		public Biped Holder;
 		public float MaxAmmo;
 		public NetworkVariable<float> Ammo;
 		public NetworkVariable<bool> IsFireDown = new NetworkVariable<bool>(false, writePerm: NetworkVariableWritePermission.Owner);
@@ -13,6 +15,10 @@ namespace LibFPS.Gameplay
 		public bool WillUseTPSViewModel;
 		public int BulletID;
 		public int WeaponDef;
+	}
+	public enum WeaponType
+	{
+		Main, Side, Heavy
 	}
 	public enum WeaponMode
 	{
