@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace LibFPS.Level
 {
-	[CreateAssetMenu(menuName = "LibFPS/Events/SpawnCharacterEvent")]
-	public unsafe class SpawnCharacterEvent : ScriptableObject, ILevelEvent
+	[CreateAssetMenu(menuName = "LibFPS/Events/SpawnPropEvent")]
+	public unsafe class SpawnPropEvent : ScriptableObject, ILevelEvent
 	{
 		public void Execute(IntPtr parameters, uint ParameterSize, IntPtr ReturnValueAddress)
 		{

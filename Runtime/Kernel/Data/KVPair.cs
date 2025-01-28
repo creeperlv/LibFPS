@@ -22,12 +22,14 @@ namespace LibFPS.Kernel.Data
 			}
 			return dict;
 		}
-		public Dictionary<A, B> Map<A, B>(Func<K, A> KeyMap, Func<V, B> ValueMap)
+		public Dictionary<A, B> Map<A, B>(Func<K, A> KeyMap, Func<V, (bool, B)> ValueMap)
 		{
 			Dictionary<A, B> dict = new Dictionary<A, B>();
 			foreach (var item in Data)
 			{
-				dict.Add(KeyMap(item.Key), ValueMap(item.Value));
+				var v = ValueMap(item.Value);
+				if (v.Item1)
+					dict.Add(KeyMap(item.Key), v.Item2);
 			}
 			return dict;
 		}

@@ -46,7 +46,7 @@ namespace LibFPS.Kernel.ResourceManagement
 				default:
 					break;
 			}
-			AnimationControllers = animations.Map((a) => a, (b) => b.ToDictionary());
+			AnimationControllers = animations.Map((a) => a, (b) => (true, b.ToDictionary()));
 			SpawnableObjects = spawnableObjects.ToDictionary();
 		}
 		public bool TryQueryAnimationControllerRecursively(string CharacterID, string AnimationControllerKey, out RuntimeAnimatorController AnimatorController)
