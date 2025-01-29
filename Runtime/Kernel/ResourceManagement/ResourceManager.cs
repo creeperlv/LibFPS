@@ -11,9 +11,11 @@ namespace LibFPS.Kernel.ResourceManagement
 		public bool PersistentResource;
 		public ResourceManagerLifetime resourceManagerLifetime;
 		public KVList<string, KVList<string, RuntimeAnimatorController>> animations;
-		public KVList<string, GameObject> spawnableObjects;
+		public KVList<string, int> spawnableObjectNames;
+		public KVList<int, GameObject> spawnableObjects;
 		private Dictionary<string, Dictionary<string, RuntimeAnimatorController>> AnimationControllers;
-		private Dictionary<string, GameObject> SpawnableObjects;
+		private Dictionary<string, int> SpawnableObjectNames;
+		private Dictionary<int, GameObject> SpawnableObjects;
 		public List<ResourceManager> SubManagers;
 		[NonSerialized]
 		[HideInInspector]
@@ -48,6 +50,7 @@ namespace LibFPS.Kernel.ResourceManagement
 			}
 			AnimationControllers = animations.Map((a) => a, (b) => (true, b.ToDictionary()));
 			SpawnableObjects = spawnableObjects.ToDictionary();
+			SpawnableObjectNames = spawnableObjectNames.ToDictionary();
 		}
 		public bool TryQueryAnimationControllerRecursively(string CharacterID, string AnimationControllerKey, out RuntimeAnimatorController AnimatorController)
 		{
