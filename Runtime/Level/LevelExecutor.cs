@@ -8,6 +8,7 @@ namespace LibFPS.Level
 	public class LevelExecutor : MonoBehaviour
 	{
 		public static LevelExecutor Instance;
+
 		public void Awake()
 		{
 			Instance = this;
