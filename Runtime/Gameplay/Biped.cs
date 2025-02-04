@@ -3,6 +3,7 @@ using LibFPS.Kernel.Data;
 using LibFPS.Kernel.ResourceManagement;
 using Mono.Cecil.Cil;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace LibFPS.Gameplay
@@ -60,7 +61,17 @@ namespace LibFPS.Gameplay
 					__UpperAnimatorAnimationController = UpperAnimatorAnimationController;
 				}
 			}
-			MoveDirection = MoveDirection.normalized;
+			//MoveDirection = MoveDirection.normalized;
+			float MV = MoveDirection.y;
+			float MH = MoveDirection.x;
+			{
+				MoveDirection.x = MH * math.sqrt(1 - (MV * MV) * .5f);
+				MoveDirection.y = MV * math.sqrt(1 - (MH * MH) * .5f);
+			}
+			if (MoveDirection.magnitude > 1)
+			{
+				MoveDirection /= MoveDirection.magnitude;
+			}
 			Move(MoveDirection.x, MoveDirection.y);
 			__IsGrounded = CharacterController.isGrounded;
 		}
