@@ -1,6 +1,7 @@
 ﻿using LibFPS.AnimationSystem;
 using LibFPS.Kernel.Data;
 using LibFPS.Kernel.ResourceManagement;
+using Mono.Cecil.Cil;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,16 +37,21 @@ namespace LibFPS.Gameplay
 		public string UpperAnimatorAnimationController;
 		private string __UpperAnimatorAnimationController;
 		public Vector2 MoveDirection;
+		public float MoveResetAngle = 60;
+		public float MovementAccelerationSpeed = 5;
+		public float MovementAccelerationThreshold = 5;
+		private Vector2 __LastMoveDirection = default;
+		private float ActualSpeed;
 		public bool IsInVehicle;
 		private bool __IsRunning;
 		private bool __IsGrounded;
 		private bool __LastIsGrounded;
 		private float __IdealVSpeed;
-		public Dictionary<string,Transform> BindableDict;
-		public KVList<string,Transform> BindableTransforms;
+		public Dictionary<string, Transform> BindableDict;
+		public KVList<string, Transform> BindableTransforms;
 		private void Update()
 		{
-			BindableDict=BindableTransforms.ToDictionary();
+			BindableDict = BindableTransforms.ToDictionary();
 			if (__UpperAnimatorAnimationController != UpperAnimatorAnimationController)
 			{
 				if (ResourceManager.TryQueryAnimationController(BipedName, UpperAnimatorAnimationController, out var __controller))
@@ -54,6 +60,7 @@ namespace LibFPS.Gameplay
 					__UpperAnimatorAnimationController = UpperAnimatorAnimationController;
 				}
 			}
+			MoveDirection = MoveDirection.normalized;
 			Move(MoveDirection.x, MoveDirection.y);
 			__IsGrounded = CharacterController.isGrounded;
 		}
@@ -61,6 +68,21 @@ namespace LibFPS.Gameplay
 		public void Jump()
 		{
 			TryJump = true;
+		}
+		void ActualSpeedAccl(float Target, float dt)
+		{
+			var d = Target - ActualSpeed;
+			if (Mathf.Abs(d) < MovementAccelerationThreshold)
+			{
+				ActualSpeed = Target;
+			}
+			else
+			{
+				if (d > 0)
+					ActualSpeed += MovementAccelerationSpeed * dt;
+				else
+					ActualSpeed -= MovementAccelerationSpeed * dt;
+			}
 		}
 		public void Rotate(float h, float v)
 		{
@@ -80,7 +102,8 @@ namespace LibFPS.Gameplay
 		}
 		private void Move(float h, float v)
 		{
-			MoveDirection = MoveDirection.normalized;
+			float dt = Time.deltaTime;
+			Vector2 ActualMovement = new Vector2(h, v);
 			if (h == 0 && v == 0)
 			{
 				UpperAnimator.SetBool(AnimatorWalking, false);
@@ -90,6 +113,11 @@ namespace LibFPS.Gameplay
 				LowerAnimator.SetBool(AnimatorRunning, false);
 				LowerAnimator.SetBool(AnimatorCrouch, IsCrouch);
 				Syncer.IsActiveMoving = false;
+				ActualSpeedAccl(0, dt);
+				if (ActualSpeed <= 0)
+				{
+					__LastMoveDirection = MoveDirection;
+				}
 			}
 			else
 			{
@@ -124,21 +152,41 @@ namespace LibFPS.Gameplay
 						SetDirection(LowerAnimator, false, false, true, false);
 					}
 				}
-				if (IsCrouch)
+				if (__LastMoveDirection.x == 0 && __LastMoveDirection.y == 0)
 				{
-					h *= CrouchSpeed;
-					v *= CrouchSpeed;
+					__LastMoveDirection = MoveDirection;
+				}
+				if (Vector2.Angle(MoveDirection, __LastMoveDirection) > MoveResetAngle)
+				{
+					ActualMovement = __LastMoveDirection;
+					ActualSpeedAccl(0, dt);
+					if (ActualSpeed <= 0)
+					{
+						__LastMoveDirection = MoveDirection;
+					}
 				}
 				else
-				if (__IsRunning)
 				{
-					h *= RunSpeed;
-					v *= RunSpeed;
-				}
-				else
-				{
-					h *= WalkSpeed;
-					v *= WalkSpeed;
+					__LastMoveDirection = ActualMovement;
+					if (IsCrouch)
+					{
+						ActualSpeedAccl(CrouchSpeed, dt);
+						//h *= CrouchSpeed;
+						//v *= CrouchSpeed;
+					}
+					else
+					if (__IsRunning)
+					{
+						ActualSpeedAccl(RunSpeed, dt);
+						//h *= RunSpeed;
+						//v *= RunSpeed;
+					}
+					else
+					{
+						ActualSpeedAccl(WalkSpeed, dt);
+						//h *= WalkSpeed;
+						//v *= WalkSpeed;
+					}
 				}
 				UpperAnimator.SetBool(AnimatorWalking, true);
 				UpperAnimator.SetBool(AnimatorRunning, __IsRunning);
@@ -161,7 +209,8 @@ namespace LibFPS.Gameplay
 					LowerAnimator.SetTrigger(Floating);
 				}
 			}
-			CharacterController.Move((t.forward * v + t.right * h) * Time.deltaTime);// + t.up * -10);
+			ActualMovement *= ActualSpeed;
+			CharacterController.Move((t.forward * ActualMovement.y + t.right * ActualMovement.x) * Time.deltaTime);// + t.up * -10);
 			if (__IsGrounded)
 			{
 				if (TryJump)

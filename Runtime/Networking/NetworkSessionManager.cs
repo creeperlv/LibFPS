@@ -6,9 +6,14 @@ namespace LibFPS.Networking
 {
 	public class NetworkSessionManager : MonoBehaviour
 	{
+		public static NetworkSessionManager instance;
 		public NetworkManager NetworkManager;
 		public UnityTransport transport;
 		public IConnectionDataProvider connectionDataProvider;
+		public void Awake()
+		{
+			instance = this;
+		}
 		public void CreateLobby(ushort Port, bool RequireApproval)
 		{
 			NetworkManager.NetworkConfig.ConnectionApproval = RequireApproval;
