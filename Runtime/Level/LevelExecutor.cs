@@ -1,4 +1,5 @@
 ﻿using LibFPS.Kernel.Data;
+using LibFPS.Scripting;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,10 +9,11 @@ namespace LibFPS.Level
 	public class LevelExecutor : MonoBehaviour
 	{
 		public static LevelExecutor Instance;
-
+		public VMBridge VMBridge;
 		public void Awake()
 		{
 			Instance = this;
+
 			events = SerializableEvents.Map((k) => k, v =>
 			{
 				if (v is GameObject go)
@@ -24,9 +26,9 @@ namespace LibFPS.Level
 				return (false, default);
 			});
 		}
-		public KVList<ulong, UnityEngine.Object> SerializableEvents;
-		public Dictionary<ulong, ILevelEvent> events;
-		public unsafe void Call(ulong eventID, IntPtr parameters, uint size, IntPtr ReturnValueAddr)
+		public KVList<ushort, UnityEngine.Object> SerializableEvents;
+		public Dictionary<ushort, ILevelEvent> events;
+		public unsafe void Call(ushort eventID, IntPtr parameters, uint size, IntPtr ReturnValueAddr)
 		{
 			if (events.TryGetValue(eventID, out var __event))
 			{
