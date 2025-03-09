@@ -131,14 +131,18 @@ namespace LibFPS.Kernel
 				}
 				pickupable.TargetTransform = value;
 				be.WeaponInBag.Add(nWeapon);
-
-				pickupable.TogglePickupableRpc(true);
+				nWeapon.Holder=biped;
+				pickupable.TogglePickupable(false);
 			}
 		}
 		public void ReleasePickupable(NetworkedPickupable p)
 		{
 			p.TargetTransform = null;
-			p.TogglePickupableRpc(false);
+			if (p is NetworkedWeapon nw)
+			{
+				nw.Holder = null;
+			}
+			p.TogglePickupable(true);
 		}
 		public void RegisterEventListener(int key, Action<ulong, string> listener)
 		{

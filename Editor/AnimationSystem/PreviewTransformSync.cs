@@ -82,7 +82,7 @@ namespace LibFPS.Editor.AnimationSystem
 		{
 			if (IsPreviewing)
 				if (target != null)
-					target.Update();
+					target.FixedUpdate();
 		}
 	}
 }

@@ -30,6 +30,10 @@ namespace LibFPS.Gameplay
 		public string Backward = "Backward";
 		public string Leftward = "Leftward";
 		public string Rightward = "Rightward";
+		public string Fire = "Fire";
+		public string Pickup = "Pickup";
+		public string Takeout = "Takeout";
+		public string Reload = "Reload";
 		public string IsFloating = "IsFloating";
 		public string Floating = "Floating";
 		public bool IsRunning;
@@ -101,7 +105,7 @@ namespace LibFPS.Gameplay
 		public void Rotate(float h, float v)
 		{
 			Self.Rotate(new Vector3(0, h * Time.deltaTime, 0));
-			Head.VRotate(v*Time.deltaTime);
+			Head.VRotate(v * Time.deltaTime);
 			//Head.Rotate(new Vector3(v * Time.deltaTime, 0, 0));
 			//var her = Head.localEulerAngles;
 			//var x = her.x % 360;

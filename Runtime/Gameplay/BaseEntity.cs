@@ -64,6 +64,14 @@ namespace LibFPS.Gameplay
 					ActiveIntractableObjects.Remove(intractable);
 			}
 		}
+		public bool TryGetCurrentWeapon(out NetworkedWeapon weapon)
+		{
+			weapon = null;
+			if (WeaponInBag.Count <= 0) return false;
+			if (CurrentHoldingWeapon.Value < 0) return false;
+			weapon = WeaponInBag[CurrentHoldingWeapon.Value];
+			return true;
+		}
 	}
 	public enum DeathBehaviour
 	{

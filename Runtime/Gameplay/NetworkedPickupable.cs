@@ -21,12 +21,23 @@ namespace LibFPS.Gameplay
 		[Rpc(SendTo.Everyone)]
 		public void TogglePickupableRpc(bool v)
 		{
+			__togglePickupable(v);
+		}
+		private void __togglePickupable(bool v)
+		{
 			Rigidbody.useGravity = v;
 			Rigidbody.isKinematic = !v;
 			foreach (var item in Colliders)
 			{
 				item.enabled = v;
 			}
+		}
+		public void TogglePickupable(bool v)
+		{
+			if (LevelCore.Instance == null || !LevelCore.Instance.IsNetworked())
+				__togglePickupable(v);
+			else TogglePickupableRpc(v);
+
 		}
 		public virtual void Start()
 		{

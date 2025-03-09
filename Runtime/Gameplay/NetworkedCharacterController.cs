@@ -14,6 +14,7 @@ namespace LibFPS.Gameplay
 		public NetworkVariable<Vector2> MoveDirection = new NetworkVariable<Vector2>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public NetworkVariable<bool> WillRun = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public NetworkVariable<bool> WillCrouch = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+		public NetworkVariable<bool> WillFire = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public void Start()
 		{
 			if (LevelCore.Instance == null || !LevelCore.Instance.IsNetworked())
@@ -50,6 +51,10 @@ namespace LibFPS.Gameplay
 			biped.MoveDirection = MoveDirection.Value;
 			biped.IsRunning = WillRun.Value;
 			biped.IsCrouch = WillCrouch.Value;
+			if (Entity.TryGetCurrentWeapon(out var weapon))
+			{
+				weapon.TryFire = WillFire.Value;
+			}
 		}
 		public void Jump()
 		{

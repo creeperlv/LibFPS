@@ -11,7 +11,7 @@ namespace LibFPS.Gameplay
 		{
 
 		}
-		public void Update()
+		public void LateUpdate()
 		{
 			if (TargetTransform != null)
 			{

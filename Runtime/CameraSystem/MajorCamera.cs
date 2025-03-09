@@ -19,7 +19,7 @@ namespace LibFPS.CameraSystem
 		{
 			FPSCam.ToTPSMode();
 		}
-		void Update()
+		void LateUpdate()
 		{
 			if (CameraTarget.Instance != null)
 			{

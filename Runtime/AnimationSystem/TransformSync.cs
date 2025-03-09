@@ -73,7 +73,7 @@ namespace LibFPS.AnimationSystem
 			if (!UsePreBakedData) CalcDelta();
 		}
 
-		public void Update()
+		public void FixedUpdate()
 		{
 			if (GlobalPos)
 			{

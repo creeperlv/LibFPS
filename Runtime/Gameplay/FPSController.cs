@@ -12,6 +12,7 @@ namespace LibFPS.Gameplay
 		public float VerticalSpeed = 1;
 		public Vector2 VerticalRange;
 		public bool IsControllingSomething;
+		public bool IsActionBlocked;
 		public float GetHPPercent()
 		{
 			if (NetCharacterController == null)
@@ -61,9 +62,13 @@ namespace LibFPS.Gameplay
 				{
 					NetCharacterController.Jump();
 				}
-				if (Input.GetButtonDown("Use"))
+				if (!IsActionBlocked)
 				{
-					NetCharacterController.Use();
+					NetCharacterController.WillFire.Value = (Input.GetButton("Fire1"));
+					if (Input.GetButtonDown("Use"))
+					{
+						NetCharacterController.Use();
+					}
 				}
 			}
 			{
