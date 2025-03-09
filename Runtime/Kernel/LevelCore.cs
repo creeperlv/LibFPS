@@ -14,24 +14,26 @@ namespace LibFPS.Kernel
 		public List<Transform> SpawnPoints;
 		internal Dictionary<int, Action<ulong, string>> EventListener = new Dictionary<int, Action<ulong, string>>();
 		internal Dictionary<int, Action<ulong>> RequestListener = new Dictionary<int, Action<ulong>>();
-		List<BaseEntity> ManagedEntities = new List<BaseEntity>();
+
+		Dictionary<int, BaseEntity> ManagedEntities = new Dictionary<int, BaseEntity>();
 		public void Start()
 		{
 			Instance = this;
 		}
-		public GameObject SpawnObject(int ID)
+		public GameObject SpawnObject(int ID, ulong OwnerID = 0)
 		{
 			if (ResourceManagement.ResourceManager.Instance.TryQuerySpawnableObjectsRecursively(ID, out var gObj))
 			{
 				if (IsNetworked())
 				{
-					var __object = NetworkManager.Singleton.SpawnManager.InstantiateAndSpawn(gObj.GetComponent<NetworkObject>());
-
+					var __object = NetworkManager.Singleton.SpawnManager.InstantiateAndSpawn(gObj.GetComponent<NetworkObject>(), ownerClientId: OwnerID);
+					RecordObject(__object.gameObject);
 					return __object.gameObject;
 				}
 				else
 				{
 					var __object = Instantiate(gObj);
+					RecordObject(__object);
 					return __object;
 				}
 			}
@@ -41,7 +43,7 @@ namespace LibFPS.Kernel
 		{
 			if (obj.TryGetComponent<BaseEntity>(out var be))
 			{
-				ManagedEntities.Add(be);
+				ManagedEntities.Add(obj.GetInstanceID(), be);
 			}
 			if (obj.TryGetComponent<NetworkedCharacterController>(out var cc))
 			{
@@ -66,6 +68,77 @@ namespace LibFPS.Kernel
 				return true;
 			}
 			return false;
+		}
+		public void Pickup(int EntityID, NetworkedPickupable pickupable)
+		{
+			foreach (var item in ManagedEntities.Keys)
+			{
+				Debug.Log($"ID:{item}=={EntityID}");
+			}
+			if (!ManagedEntities.TryGetValue(EntityID, out var be))
+			{
+				Debug.Log("Target Entity does not exist!");
+				return;
+			}
+			if (!be.TryGetComponent<Biped>(out var biped))
+			{
+				Debug.Log("Biped does not exist on target entity!");
+				return;
+			}
+			if (!be.TryGetComponent<NetworkedCharacterController>(out var ncc))
+			{
+				Debug.Log("NetworkCharacterController does not exist on target entity!");
+				return;
+			}
+			if (pickupable is NetworkedWeapon nWeapon)
+			{
+
+				int wCount = 0;
+				foreach (var item in be.WeaponInBag)
+				{
+					switch (item.PositionType)
+					{
+						case BipedPositionType.Main:
+						case BipedPositionType.Side:
+							wCount++;
+							break;
+						case BipedPositionType.Heavy:
+							break;
+						case BipedPositionType.HandOnly:
+							break;
+						default:
+							break;
+					}
+				}
+				if (wCount >= be.MaxNormalWeaponCanHold)
+				{
+					for (int i = be.WeaponInBag.Count - 1; i >= be.MaxNormalWeaponCanHold; i--)
+					{
+						ReleasePickupable(be.WeaponInBag[i]);
+						be.WeaponInBag.RemoveAt(i);
+					}
+					ReleasePickupable(be.WeaponInBag[be.CurrentHoldingWeapon.Value]);
+					be.WeaponInBag.RemoveAt(be.CurrentHoldingWeapon.Value);
+				}
+				if (be.CurrentHoldingWeapon.Value < 0)
+				{
+					be.CurrentHoldingWeapon.Value = 0;
+				}
+				if (!biped.BindableDict.TryGetValue(BipedPositionType.HandOnly, out var value))
+				{
+					Debug.Log("Biped does not have a hand!");
+					return;
+				}
+				pickupable.TargetTransform = value;
+				be.WeaponInBag.Add(nWeapon);
+
+				pickupable.TogglePickupableRpc(true);
+			}
+		}
+		public void ReleasePickupable(NetworkedPickupable p)
+		{
+			p.TargetTransform = null;
+			p.TogglePickupableRpc(false);
 		}
 		public void RegisterEventListener(int key, Action<ulong, string> listener)
 		{

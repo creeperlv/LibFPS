@@ -1,4 +1,5 @@
 ﻿using LibFPS.Kernel;
+using LibFPS.Kernel.ResourceManagement;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -26,6 +27,11 @@ namespace LibFPS.Gameplay
 					if (isPlayerObject)
 						FPSController.Instance.NetCharacterController = this;
 			}
+		}
+		[Rpc(SendTo.Everyone)]
+		public void ChangeAnimationRpc(string id)
+		{
+			biped.UpperAnimatorAnimationController = id;
 		}
 		public void Update()
 		{
@@ -62,7 +68,11 @@ namespace LibFPS.Gameplay
 		}
 		private void __use()
 		{
-
+			if (Entity.ActiveIntractableObjects.Count > 0)
+			{
+				Entity.ActiveIntractableObjects[0].Interact(this.gameObject.GetInstanceID());
+				Entity.ActiveIntractableObjects.RemoveAt(0);
+			}
 		}
 		public void Use()
 		{

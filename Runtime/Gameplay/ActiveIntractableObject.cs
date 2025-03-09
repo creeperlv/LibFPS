@@ -1,26 +1,51 @@
 ﻿using LibFPS.Kernel.Data;
 using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.Events;
+using static Codice.Client.Common.EventTracking.TrackFeatureUseEvent.Features.DesktopGUI.Filters;
 
 namespace LibFPS.Gameplay
 {
-	public class ActiveIntractableObject : NetworkBehaviour
+	public class ActiveIntractableObject : IntractableObject
 	{
 		public LocalizedString Hint;
 		private void OnTriggerEnter(UnityEngine.Collider other)
 		{
-			other.gameObject.GetComponent<BaseEntity>().AddIntractable(this);
+			Debug.Log("Triggered.");
+			var e = other.gameObject.GetComponentInParent<BaseEntity>();
+			if (e != null)
+				e.AddIntractable(this);
 		}
 		private void OnTriggerExit(UnityEngine.Collider other)
 		{
-			other.gameObject.GetComponent<BaseEntity>().RemoveIntractable(this);
+			var e = other.gameObject.GetComponentInParent<BaseEntity>();
+			if (e != null)
+				e.RemoveIntractable(this);
+		}
+		public void OnCollisionEnter(UnityEngine.Collision collision)
+		{
+			var e = collision.gameObject.GetComponentInParent<BaseEntity>();
+			if (e != null)
+				e.AddIntractable(this);
+
+		}
+		public void OnCollisionExit(UnityEngine.Collision collision)
+		{
+
+			var e = collision.gameObject.GetComponentInParent<BaseEntity>();
+			if (e != null)
+				e.RemoveIntractable(this);
 		}
 	}
-	public class PassiveIntractableObject : NetworkBehaviour
+	public class PassiveIntractableObject : IntractableObject
 	{
 	}
 	public class IntractableObject : NetworkBehaviour
 	{
-		public UnityEvent<ulong> Action;
+		public UnityEvent<int> Action;
+		public void Interact(int Interactor)
+		{
+			Action.Invoke(Interactor);
+		}
 	}
 }

@@ -8,11 +8,23 @@ namespace LibFPS.Gameplay
 	public class BaseEntity : NetworkBehaviour
 	{
 		public float MaxHP;
+		public Biped Biped;
 		public List<ActiveIntractableObject> ActiveIntractableObjects;
 		public NetworkVariable<float> HP;
 		public DeathBehaviour deathBehaviour;
 		public int TargetReplacementObjectID;
 		public List<MonoBehaviour> BehaviourToDisable;
+		public int MaxNormalWeaponCanHold = 2;
+		public NetworkVariable<int> CurrentHoldingWeapon = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+		public List<NetworkedWeapon> WeaponInBag;
+		private void Update()
+		{
+			if (WeaponInBag.Count > 0)
+			{
+				var currentWeapon = WeaponInBag[CurrentHoldingWeapon.Value];
+				Biped.UpperAnimatorAnimationController = currentWeapon.AnimatorKey;
+			}
+		}
 		public virtual void ChangeHP(float Amount)
 		{
 			HP.Value -= Amount;

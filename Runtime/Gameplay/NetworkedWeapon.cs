@@ -6,7 +6,7 @@ namespace LibFPS.Gameplay
 	public class NetworkedWeapon : NetworkedPickupable
 	{
 		[Header("NetworkedPickupable")]
-		public WeaponType WeaponType;
+		public BipedPositionType PositionType;
 		public Biped Holder;
 		public float MaxAmmo;
 		public NetworkVariable<float> Ammo;
@@ -17,9 +17,9 @@ namespace LibFPS.Gameplay
 		public int BulletID;
 		public int WeaponDef;
 	}
-	public enum WeaponType
+	public enum BipedPositionType
 	{
-		Main, Side, Heavy
+		Main, Side, Heavy, HandOnly
 	}
 	public enum WeaponMode
 	{

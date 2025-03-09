@@ -1,3 +1,4 @@
+using LibFPS.Localization;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,7 @@ namespace LibFPS.Gameplay.HUDSystem
 		public float FadeSpeed;
 		public float DeltaThreshold;
 		public bool ElasticFade;
+		public Text IntractionHint;
 		void Start()
 		{
 			if (Instance != null)
@@ -76,6 +78,22 @@ namespace LibFPS.Gameplay.HUDSystem
 			{
 				HP.fillAmount = FPSController.Instance.GetHPPercent();
 				Shield.fillAmount = FPSController.Instance.GetShieldPercent();
+				bool WillShow = false;
+				if (FPSController.Instance.NetCharacterController != null)
+					if (FPSController.Instance.NetCharacterController.Entity != null)
+					{
+						if (FPSController.Instance.NetCharacterController.Entity.ActiveIntractableObjects.Count > 0)
+						{
+							WillShow = true;
+							var obj = FPSController.Instance.NetCharacterController.Entity.ActiveIntractableObjects[0];
+							IntractionHint.text = LocaleProvider.TryQueryString(obj.Hint);
+						}
+
+					}
+				if (IntractionHint.gameObject.activeSelf != WillShow)
+				{
+					IntractionHint.gameObject.SetActive(WillShow);
+				}
 			}
 		}
 	}

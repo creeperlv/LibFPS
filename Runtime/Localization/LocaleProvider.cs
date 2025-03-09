@@ -1,5 +1,6 @@
 using LibFPS.Kernel.Data;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace LibFPS.Localization
@@ -14,11 +15,18 @@ namespace LibFPS.Localization
 		{
 			Instance = this;
 		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string TryQueryString(LocalizedString localizedString)
+		{
+			return TryQueryString(localizedString.StringID, localizedString.Fallback);
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static string TryQueryString(string id, string fallback)
 		{
 			if (Instance == null) return fallback;
 			return Instance.TryGetString(id, fallback);
 		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public string TryGetString(string id, string fallback)
 		{
 			if (CurrentLanguage.TryGetValue(id, out var text))

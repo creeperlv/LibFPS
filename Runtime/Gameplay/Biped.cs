@@ -13,7 +13,7 @@ namespace LibFPS.Gameplay
 		public string BipedName;
 		public CharacterController CharacterController;
 		public TransformRotationDelayedSync Syncer;
-		public Transform Head;
+		public DifferentialRotation Head;
 		public Transform Self;
 		public Animator UpperAnimator;
 		public Animator LowerAnimator;
@@ -48,11 +48,14 @@ namespace LibFPS.Gameplay
 		private bool __IsGrounded;
 		private bool __LastIsGrounded;
 		private float __IdealVSpeed;
-		public Dictionary<string, Transform> BindableDict;
-		public KVList<string, Transform> BindableTransforms;
-		private void Update()
+		public Dictionary<BipedPositionType, Transform> BindableDict;
+		public KVList<BipedPositionType, Transform> BindableTransforms;
+		public void Start()
 		{
 			BindableDict = BindableTransforms.ToDictionary();
+		}
+		private void Update()
+		{
 			if (__UpperAnimatorAnimationController != UpperAnimatorAnimationController)
 			{
 				if (ResourceManager.TryQueryAnimationController(BipedName, UpperAnimatorAnimationController, out var __controller))
@@ -98,18 +101,19 @@ namespace LibFPS.Gameplay
 		public void Rotate(float h, float v)
 		{
 			Self.Rotate(new Vector3(0, h * Time.deltaTime, 0));
-			Head.Rotate(new Vector3(v * Time.deltaTime, 0, 0));
-			var her = Head.localEulerAngles;
-			var x = her.x % 360;
-			if (x > 180)
-			{
-				her.x = Mathf.Max(x, 270 + VerticalRange.x);
-			}
-			else
-			{
-				her.x = Mathf.Min(x, 90 - VerticalRange.x);
-			}
-			Head.localEulerAngles = her;
+			Head.VRotate(v*Time.deltaTime);
+			//Head.Rotate(new Vector3(v * Time.deltaTime, 0, 0));
+			//var her = Head.localEulerAngles;
+			//var x = her.x % 360;
+			//if (x > 180)
+			//{
+			//	her.x = Mathf.Max(x, 270 + VerticalRange.x);
+			//}
+			//else
+			//{
+			//	her.x = Mathf.Min(x, 90 - VerticalRange.x);
+			//}
+			//Head.localEulerAngles = her;
 		}
 		private void Move(float h, float v)
 		{
