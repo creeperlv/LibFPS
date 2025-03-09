@@ -34,4 +34,14 @@ namespace LibFPS.Kernel.Data
 			return dict;
 		}
 	}
+	public class INIFormat
+	{
+
+	}
+	[Serializable]
+	public class LocalizedString
+	{
+		public string StringID;
+		public string Fallback;
+	}
 }

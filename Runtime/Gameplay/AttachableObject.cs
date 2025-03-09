@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 namespace LibFPS.Gameplay
 {
-	public class AttachableObject : MonoBehaviour
+	public class AttachableObject : NetworkBehaviour
 	{
+		[Header("AttachableObject")]
 		public Transform TargetTransform;
 		public virtual void OnUpdate()
 		{

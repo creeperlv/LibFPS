@@ -29,6 +29,16 @@ namespace LibFPS.CameraSystem
 					OperatingTransform.position = instance.transform.position;
 					OperatingTransform.rotation = instance.transform.rotation;
 				}
+				else
+				{
+					if (instance.NonLinearFollow)
+					{
+
+						var d = instance.transform.position - OperatingTransform.position;
+						OperatingTransform.position = OperatingTransform.position + d * Time.deltaTime * instance.SmoothFollowSpeed;
+						OperatingTransform.rotation = instance.transform.rotation;
+					}
+				}
 				FPSCam.Cam.fieldOfView = Cam.fieldOfView;
 			}
 		}

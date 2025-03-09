@@ -52,6 +52,42 @@ namespace LibFPS.Kernel.ResourceManagement
 			SpawnableObjects = spawnableObjects.ToDictionary();
 			SpawnableObjectNames = spawnableObjectNames.ToDictionary();
 		}
+		public bool TryQuerySpawnableObjectsRecursively(string SpawnID, out GameObject gObj)
+		{
+			if (!SpawnableObjectNames.TryGetValue(SpawnID, out var id)){
+				if (SpawnableObjects.TryGetValue(id, out gObj))
+				{
+					return true;
+				}
+			}
+			foreach (var item in SubManagers)
+			{
+				if (item.TryQuerySpawnableObjectsRecursively(SpawnID, out gObj))
+				{
+					return true;
+				}
+			}
+			gObj = null;
+			return false;
+		}
+		public bool TryQuerySpawnableObjectsRecursively(int id, out GameObject gObj)
+		{
+			{
+				if (SpawnableObjects.TryGetValue(id, out gObj))
+				{
+					return true;
+				}
+			}
+			foreach (var item in SubManagers)
+			{
+				if (item.TryQuerySpawnableObjectsRecursively(id, out gObj))
+				{
+					return true;
+				}
+			}
+			gObj = null;
+			return false;
+		}
 		public bool TryQueryAnimationControllerRecursively(string CharacterID, string AnimationControllerKey, out RuntimeAnimatorController AnimatorController)
 		{
 			if (AnimationControllers.TryGetValue(CharacterID, out var animationControllers))

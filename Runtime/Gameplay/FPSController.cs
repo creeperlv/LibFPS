@@ -14,10 +14,14 @@ namespace LibFPS.Gameplay
 		public bool IsControllingSomething;
 		public float GetHPPercent()
 		{
+			if (NetCharacterController == null)
+				return 0;
 			return NetCharacterController.Entity.HP.Value / NetCharacterController.Entity.MaxHP;
 		}
 		public float GetShieldPercent()
 		{
+			if (NetCharacterController == null)
+				return 0;
 			if (NetCharacterController.Entity is ShieldedEntity SEntity)
 			{
 				return SEntity.Shield.Value / SEntity.MaxShield;
@@ -35,6 +39,7 @@ namespace LibFPS.Gameplay
 		}
 		void Start()
 		{
+
 			Instance = this;
 			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
@@ -43,6 +48,7 @@ namespace LibFPS.Gameplay
 		// Update is called once per frame
 		void Update()
 		{
+			if (NetCharacterController == null) return;
 			{
 				var h = Input.GetAxis("Mouse X");
 				var v = Input.GetAxis("Mouse Y");
@@ -54,6 +60,10 @@ namespace LibFPS.Gameplay
 				if (Input.GetButtonDown("Jump"))
 				{
 					NetCharacterController.Jump();
+				}
+				if (Input.GetButtonDown("Use"))
+				{
+					NetCharacterController.Use();
 				}
 			}
 			{

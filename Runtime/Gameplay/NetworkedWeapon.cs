@@ -1,10 +1,11 @@
-﻿using log4net.Util;
-using Unity.Netcode;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 namespace LibFPS.Gameplay
 {
 	public class NetworkedWeapon : NetworkedPickupable
 	{
+		[Header("NetworkedPickupable")]
 		public WeaponType WeaponType;
 		public Biped Holder;
 		public float MaxAmmo;

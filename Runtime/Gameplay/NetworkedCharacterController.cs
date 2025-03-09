@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LibFPS.Kernel;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,9 +9,24 @@ namespace LibFPS.Gameplay
 	{
 		public Biped biped;
 		public BaseEntity Entity;
+		public bool isPlayerObject;
 		public NetworkVariable<Vector2> MoveDirection = new NetworkVariable<Vector2>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public NetworkVariable<bool> WillRun = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public NetworkVariable<bool> WillCrouch = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+		public void Start()
+		{
+			if (LevelCore.Instance == null || !LevelCore.Instance.IsNetworked())
+			{
+				if (isPlayerObject)
+					FPSController.Instance.NetCharacterController = this;
+			}
+			else
+			{
+				if (IsClient)
+					if (isPlayerObject)
+						FPSController.Instance.NetCharacterController = this;
+			}
+		}
 		public void Update()
 		{
 			if (IsClient == false && IsServer == false)
