@@ -2,7 +2,6 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
-using static Codice.Client.Common.EventTracking.TrackFeatureUseEvent.Features.DesktopGUI.Filters;
 
 namespace LibFPS.Gameplay
 {

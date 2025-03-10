@@ -20,7 +20,8 @@ namespace LibFPS.Gameplay
 			if (LevelCore.Instance == null || !LevelCore.Instance.IsNetworked())
 			{
 				if (isPlayerObject)
-					FPSController.Instance.NetCharacterController = this;
+					if (FPSController.Instance != null)
+						FPSController.Instance.NetCharacterController = this;
 			}
 			else
 			{

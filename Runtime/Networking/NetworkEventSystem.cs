@@ -1,5 +1,4 @@
 ﻿using LibFPS.Kernel;
-using log4net.Core;
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;

@@ -24,6 +24,7 @@ namespace LibFPS.Gameplay
 		public WeaponMode fireType;
 		public bool IsHeavyWeapon;
 		public bool WillUseTPSViewModel;
+		public bool DisableAmmo;
 		public int BulletID;
 		public int WeaponDef;
 		public WeaponDef DefaultDef;
@@ -185,7 +186,8 @@ namespace LibFPS.Gameplay
 				__semiCount++;
 			}
 			PlayFireEffect();
-			this.CurrentMagazine--;
+			if (!DisableAmmo)
+				this.CurrentMagazine--;
 			NotifyWeaponAmmo();
 			if (Holder != null)
 			{
@@ -203,7 +205,7 @@ namespace LibFPS.Gameplay
 	}
 	public enum AmmoDisp
 	{
-		None, TwoDig, ThreeDig, Liner,Text
+		None, TwoDig, ThreeDig, Liner, Text
 	}
 	public enum BipedPositionType
 	{
