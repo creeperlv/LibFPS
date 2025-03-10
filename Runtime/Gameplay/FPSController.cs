@@ -69,6 +69,18 @@ namespace LibFPS.Gameplay
 					{
 						NetCharacterController.Use();
 					}
+					if (Input.GetButtonDown("Reload"))
+					{
+						NetCharacterController.Reload();
+					}
+					if (Input.GetButtonDown("Melee"))
+					{
+						NetCharacterController.Melee();
+					}
+					if (Input.GetButtonDown("SwitchWeapon"))
+					{
+						NetCharacterController.SwitchWeapon();
+					}
 				}
 			}
 			{

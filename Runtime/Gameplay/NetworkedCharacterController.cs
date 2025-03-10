@@ -15,6 +15,7 @@ namespace LibFPS.Gameplay
 		public NetworkVariable<bool> WillRun = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public NetworkVariable<bool> WillCrouch = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 		public NetworkVariable<bool> WillFire = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+		public bool IsOperationLocked = false;
 		public void Start()
 		{
 			if (LevelCore.Instance == null || !LevelCore.Instance.IsNetworked())
@@ -50,11 +51,68 @@ namespace LibFPS.Gameplay
 		{
 
 			biped.MoveDirection = MoveDirection.Value;
-			biped.IsRunning = WillRun.Value;
+			if (!IsOperationLocked)
+				biped.IsRunning = WillRun.Value;
 			biped.IsCrouch = WillCrouch.Value;
-			if (Entity.TryGetCurrentWeapon(out var weapon))
+			if (!IsOperationLocked)
+				if (Entity.TryGetCurrentWeapon(out var weapon))
+				{
+					weapon.TryFire = WillFire.Value;
+				}
+		}
+		public void SwitchWeapon()
+		{
+			if (!IsOperationLocked)
+				if (Entity.WeaponInBag.Count > 1)
+				{
+					Entity.CurrentHoldingWeapon.Value++;
+					Entity.CurrentHoldingWeapon.Value = Entity.CurrentHoldingWeapon.Value % 2;
+					var anotherIDX = (Entity.CurrentHoldingWeapon.Value + 1) % 2;
+					var newW = Entity.WeaponInBag[Entity.CurrentHoldingWeapon.Value];
+					var oldW = Entity.WeaponInBag[anotherIDX];
+					biped.UpperAnimatorAnimationController = newW.AnimatorKey;
+					biped.UpperAnimator.SetTrigger(biped.Pickup);
+					if (biped.BindableDict.TryGetValue(BipedPositionType.HandOnly, out var t))
+					{
+						newW.TargetTransform = t;
+					}
+					if (biped.BindableDict.TryGetValue(oldW.PositionType, out t))
+					{
+						oldW.TargetTransform = t;
+					}
+				}
+		}
+		void __melee()
+		{
+			if (!IsOperationLocked)
+				biped.UpperAnimator.SetTrigger(biped.Melee);
+
+		}
+		void __reload()
+		{
+			if (!IsOperationLocked)
+				if (Entity.WeaponInBag.Count > 0)
+				{
+					var Weapon = Entity.WeaponInBag[Entity.CurrentHoldingWeapon.Value];
+					if (Weapon.CurrentMagazine < Weapon.CurrentDef.AmmoPerMagzine && Weapon.CurrentBackup > 0)
+					{
+						biped.UpperAnimator.SetTrigger(biped.Reload);
+					}
+
+				}
+		}
+		public void Reload()
+		{
+			if (!LevelCore.Instance.IsNetworked())
 			{
-				weapon.TryFire = WillFire.Value;
+				__reload();
+			}
+		}
+		public void Melee()
+		{
+			if (!LevelCore.Instance.IsNetworked())
+			{
+				__melee();
 			}
 		}
 		public void Jump()

@@ -19,6 +19,8 @@ namespace LibFPS.Gameplay.HUDSystem
 		public float DeltaThreshold;
 		public bool ElasticFade;
 		public Text IntractionHint;
+		public Text CurrentWeaponMagzine;
+		public Text CurrentWeaponBackup;
 		void Start()
 		{
 			if (Instance != null)
@@ -44,6 +46,8 @@ namespace LibFPS.Gameplay.HUDSystem
 		{
 			TargetAlpha = 0;
 		}
+		int CurrentBKUP = -1;
+		int CurrentAMMO = -1;
 		public void Update()
 		{
 			if (ElasticFade)
@@ -82,13 +86,27 @@ namespace LibFPS.Gameplay.HUDSystem
 				if (FPSController.Instance.NetCharacterController != null)
 					if (FPSController.Instance.NetCharacterController.Entity != null)
 					{
-						if (FPSController.Instance.NetCharacterController.Entity.ActiveIntractableObjects.Count > 0)
+						var entity = FPSController.Instance.NetCharacterController.Entity;
+						if (entity.ActiveIntractableObjects.Count > 0)
 						{
 							WillShow = true;
-							var obj = FPSController.Instance.NetCharacterController.Entity.ActiveIntractableObjects[0];
+							var obj = entity.ActiveIntractableObjects[0];
 							IntractionHint.text = LocaleProvider.TryQueryString(obj.Hint);
 						}
-
+						if (entity.WeaponInBag.Count > 0)
+						{
+							var weapon = entity.WeaponInBag[entity.CurrentHoldingWeapon.Value];
+							if (CurrentBKUP != weapon.CurrentBackup)
+							{
+								CurrentWeaponBackup.text = weapon.CurrentBackup.ToString();
+								CurrentBKUP = weapon.CurrentBackup;
+							}
+							if (CurrentAMMO != weapon.CurrentMagazine)
+							{
+								CurrentWeaponMagzine.text = weapon.CurrentMagazine.ToString();
+								CurrentAMMO = weapon.CurrentMagazine;
+							}
+						}
 					}
 				if (IntractionHint.gameObject.activeSelf != WillShow)
 				{

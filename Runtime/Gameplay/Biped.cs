@@ -35,6 +35,7 @@ namespace LibFPS.Gameplay
 		public string Reload = "Reload";
 		public string IsFloating = "IsFloating";
 		public string Floating = "Floating";
+		public string Melee = "Melee";
 		public bool IsRunning;
 		public bool IsPickingUp;
 		public bool __IsPickingUp;

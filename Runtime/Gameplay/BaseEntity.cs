@@ -10,6 +10,7 @@ namespace LibFPS.Gameplay
 
 	public class BaseEntity : NetworkBehaviour
 	{
+		public int RelationID;
 		public float MaxHP;
 		public float HPRegen;
 		public float RegenDelay;
@@ -44,9 +45,14 @@ namespace LibFPS.Gameplay
 			}
 			else
 			{
-				if(HP.Value<MaxHP)
+				if (HP.Value < MaxHP)
 					HP.Value += HPRegen * Time.deltaTime;
 			}
+		}
+		public virtual void DealDamageDT(DamageConfig config)
+		{
+			DamageTime = 0;
+			ChangeHP(config.HPDamage * HPDamageIntensity * Time.deltaTime + config.ShieldDamage * ShieldDamageIntensity * Time.deltaTime);
 		}
 		public virtual void DealDamage(DamageConfig config)
 		{

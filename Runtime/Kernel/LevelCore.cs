@@ -21,7 +21,7 @@ namespace LibFPS.Kernel
 		public string NormalLayerName;
 		public LayerMask ExcludeAirBlock;
 		public LayerMask ExcludePlauerAndAirBlock;
-		Dictionary<int, BaseEntity> ManagedEntities = new Dictionary<int, BaseEntity>();
+		public Dictionary<int, BaseEntity> ManagedEntities = new Dictionary<int, BaseEntity>();
 		public void Start()
 		{
 			Instance = this;
