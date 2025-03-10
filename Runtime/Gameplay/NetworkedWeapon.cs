@@ -1,5 +1,6 @@
 ﻿using LibFPS.Gameplay.Data;
 using LibFPS.Kernel.DefinitionManagement;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -28,13 +29,26 @@ namespace LibFPS.Gameplay
 		public override void Start()
 		{
 			base.Start();
-			if (DefinitionManager.Instance.WeaponDefDefinition.TryGetValue(WeaponDef, out var def))
+			StartCoroutine(QueryDef());
+		}
+		public IEnumerator QueryDef()
+		{
+			while (true)
 			{
-				CurrentDef = def;
-			}
-			else
-			{
-				CurrentDef = DefaultDef;
+
+				if (DefinitionManager.Instance != null)
+				{
+					if (DefinitionManager.Instance.WeaponDefDefinition.TryGetValue(WeaponDef, out var def))
+					{
+						CurrentDef = def;
+					}
+					else
+					{
+						CurrentDef = DefaultDef;
+					}
+					yield break;
+				}
+				yield return null;
 			}
 		}
 		public override void OnUpdate()

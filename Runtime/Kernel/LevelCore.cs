@@ -14,11 +14,16 @@ namespace LibFPS.Kernel
 		public List<Transform> SpawnPoints;
 		internal Dictionary<int, Action<ulong, string>> EventListener = new Dictionary<int, Action<ulong, string>>();
 		internal Dictionary<int, Action<ulong>> RequestListener = new Dictionary<int, Action<ulong>>();
-
+		public string PlayerObjectLayerName;
+		public int PlayerObjectLayer;
+		public int NormalLayer;
+		public string NormalLayerName;
 		Dictionary<int, BaseEntity> ManagedEntities = new Dictionary<int, BaseEntity>();
 		public void Start()
 		{
 			Instance = this;
+			PlayerObjectLayer = LayerMask.NameToLayer(PlayerObjectLayerName);
+			NormalLayer = LayerMask.NameToLayer(NormalLayerName);
 		}
 		public GameObject SpawnObject(int ID, ulong OwnerID = 0)
 		{
@@ -90,6 +95,7 @@ namespace LibFPS.Kernel
 				Debug.Log("NetworkCharacterController does not exist on target entity!");
 				return;
 			}
+
 			if (pickupable is NetworkedWeapon nWeapon)
 			{
 
@@ -129,10 +135,22 @@ namespace LibFPS.Kernel
 					Debug.Log("Biped does not have a hand!");
 					return;
 				}
+				if (ncc == FPSController.Instance.NetCharacterController)
+				{
+					SetLayerRecursively(pickupable.gameObject, PlayerObjectLayer);
+				}
 				pickupable.TargetTransform = value;
 				be.WeaponInBag.Add(nWeapon);
-				nWeapon.Holder=biped;
+				nWeapon.Holder = biped;
 				pickupable.TogglePickupable(false);
+			}
+		}
+		public void SetLayerRecursively(GameObject obj, LayerMask mask)
+		{
+			obj.layer = mask;
+			for (int i = 0; i < obj.transform.childCount; i++)
+			{
+				SetLayerRecursively(obj.transform.GetChild(i).gameObject, mask);
 			}
 		}
 		public void ReleasePickupable(NetworkedPickupable p)
@@ -142,6 +160,7 @@ namespace LibFPS.Kernel
 			{
 				nw.Holder = null;
 			}
+			SetLayerRecursively(p.gameObject, NormalLayer);
 			p.TogglePickupable(true);
 		}
 		public void RegisterEventListener(int key, Action<ulong, string> listener)
