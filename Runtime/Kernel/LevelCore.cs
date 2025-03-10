@@ -1,5 +1,8 @@
 using LibFPS.Gameplay;
+using LibFPS.Gameplay.Data;
 using LibFPS.Kernel.Data;
+using LibFPS.Kernel.DefinitionManagement;
+using LibFPS.Utilities;
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -18,12 +21,103 @@ namespace LibFPS.Kernel
 		public int PlayerObjectLayer;
 		public int NormalLayer;
 		public string NormalLayerName;
+		public LayerMask ExcludeAirBlock;
+		public LayerMask ExcludePlauerAndAirBlock;
 		Dictionary<int, BaseEntity> ManagedEntities = new Dictionary<int, BaseEntity>();
 		public void Start()
 		{
 			Instance = this;
 			PlayerObjectLayer = LayerMask.NameToLayer(PlayerObjectLayerName);
 			NormalLayer = LayerMask.NameToLayer(NormalLayerName);
+		}
+		public void SpawnBullet(int ID, BaseEntity Sender, Transform pos, float RandomizeIntensity, DamageConfig damageConfig, float HitScanRange = 100f)
+		{
+			if (ResourceManagement.ResourceManager.Instance.TryQuerySpawnableObjectsRecursively(ID, out var gObj))
+			{
+				Quaternion Rotation = this.transform.rotation;
+				if (IsNetworked())
+				{
+					//TODO
+				}
+				else
+				{
+					if (gObj.TryGetComponent<Bullet>(out var b))
+					{
+						if (b.IsHitScan)
+						{
+							if (Physics.Raycast(pos.position, pos.forward, out var hit, HitScanRange, this.ExcludeAirBlock, QueryTriggerInteraction.Ignore))
+							{
+								var bEntity = hit.collider.GetComponentInParent<BaseEntity>();
+								if (bEntity != null)
+								{
+
+									if (Sender != bEntity)
+									{
+										bEntity.DealDamage(damageConfig);
+									}
+								}
+								if (DefinitionManager.Instance.HitDefinition.TryGetValue(b.BulletID, out var hitDef))
+								{
+									GameObject HitEffect = null;
+									bool Hit = false;
+									var mat = hit.collider.GetComponentInParent<Gameplay.Data.PhysicMaterial>();
+									if (mat != null)
+									{
+										if (!hitDef.HitEffect.TryGetValue(mat.MaterialID, out HitEffect))
+										{
+											Hit = true;
+										}
+									}
+									if (!Hit) Hit = hitDef.HitEffect.TryGetValue(b.HitEffect, out HitEffect);
+									if (Hit)
+									{
+										LevelCore.Instance.SpawnEffectObject(HitEffect, hit.point, hit.normal);
+									}
+								}
+							}
+							return;
+						}
+					}
+					var __object = Instantiate(gObj);
+					__object.transform.position = pos.position;
+					__object.transform.rotation = pos.rotation;
+					var rb = __object.GetComponent<Bullet>();
+					if (rb != null)
+					{
+						rb.Damage = damageConfig;
+					}
+				}
+			}
+		}
+		public void SpawnEffectObject(GameObject gObj, Vector3 Pos, Quaternion Rot)
+		{
+			if (IsNetworked())
+			{
+				var __object = NetworkManager.Singleton.SpawnManager.InstantiateAndSpawn(gObj.GetComponent<NetworkObject>());
+				__object.transform.position = Pos;
+				__object.transform.rotation = Rot;
+			}
+			else
+			{
+				var __object = Instantiate(gObj);
+				__object.transform.position = Pos;
+				__object.transform.rotation = Rot;
+			}
+		}
+		public void SpawnEffectObject(GameObject gObj, Vector3 Pos, Vector3 Face)
+		{
+			if (IsNetworked())
+			{
+				var __object = NetworkManager.Singleton.SpawnManager.InstantiateAndSpawn(gObj.GetComponent<NetworkObject>());
+				__object.transform.position = Pos;
+				__object.transform.forward = Face;
+			}
+			else
+			{
+				var __object = Instantiate(gObj);
+				__object.transform.position = Pos;
+				__object.transform.forward = Face;
+			}
 		}
 		public GameObject SpawnObject(int ID, ulong OwnerID = 0)
 		{
@@ -142,7 +236,17 @@ namespace LibFPS.Kernel
 				pickupable.TargetTransform = value;
 				be.WeaponInBag.Add(nWeapon);
 				nWeapon.Holder = biped;
+				nWeapon.HolderEntity = be;
 				pickupable.TogglePickupable(false);
+			}
+		}
+		public void DestroyGameObejct(GameObject obj,float Time)
+		{
+			if (ManagedEntities.ContainsKey(obj.GetInstanceID())){
+				ManagedEntities.Remove(obj.GetInstanceID());
+			}
+			{
+				Destroy(obj,Time);
 			}
 		}
 		public void SetLayerRecursively(GameObject obj, LayerMask mask)
