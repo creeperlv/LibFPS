@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 namespace LibFPS.Kernel
 {
@@ -45,8 +46,10 @@ namespace LibFPS.Kernel
 					{
 						if (b.IsHitScan)
 						{
+							Debug.DrawRay(pos.position, pos.forward, Color.red,10);
 							if (Physics.Raycast(pos.position, pos.forward, out var hit, HitScanRange, this.ExcludeAirBlock, QueryTriggerInteraction.Ignore))
 							{
+								Debug.Log("Hit Scan hit");
 								var bEntity = hit.collider.GetComponentInParent<BaseEntity>();
 								if (bEntity != null)
 								{
@@ -73,6 +76,7 @@ namespace LibFPS.Kernel
 									{
 										LevelCore.Instance.SpawnEffectObject(HitEffect, hit.point, hit.normal);
 									}
+									Debug.Log("Found Hit Effect="+Hit);
 								}
 							}
 							return;
@@ -88,6 +92,21 @@ namespace LibFPS.Kernel
 					}
 				}
 			}
+		}
+		public void SpawnEffectObjectLocal(int ID, Transform pos)
+		{
+			if (ResourceManagement.ResourceManager.Instance.TryQuerySpawnableObjectsRecursively(ID, out var gObj))
+			{
+				var __object = Instantiate(gObj, pos);
+			}
+		}
+		public void SpawnEffectObject(int ID, Transform pos)
+		{
+			if (ResourceManagement.ResourceManager.Instance.TryQuerySpawnableObjectsRecursively(ID, out var gObj))
+			{
+				SpawnEffectObject(gObj, pos.position, pos.rotation);
+			}
+
 		}
 		public void SpawnEffectObject(GameObject gObj, Vector3 Pos, Quaternion Rot)
 		{
@@ -233,6 +252,10 @@ namespace LibFPS.Kernel
 				{
 					SetLayerRecursively(pickupable.gameObject, PlayerObjectLayer);
 				}
+				if (be.UseEntityFirePoint)
+				{
+					nWeapon.CurrentFirePoint = be.FirePoint;
+				}
 				pickupable.TargetTransform = value;
 				be.WeaponInBag.Add(nWeapon);
 				nWeapon.Holder = biped;
@@ -240,13 +263,14 @@ namespace LibFPS.Kernel
 				pickupable.TogglePickupable(false);
 			}
 		}
-		public void DestroyGameObejct(GameObject obj,float Time)
+		public void DestroyGameObejct(GameObject obj, float Time)
 		{
-			if (ManagedEntities.ContainsKey(obj.GetInstanceID())){
+			if (ManagedEntities.ContainsKey(obj.GetInstanceID()))
+			{
 				ManagedEntities.Remove(obj.GetInstanceID());
 			}
 			{
-				Destroy(obj,Time);
+				Destroy(obj, Time);
 			}
 		}
 		public void SetLayerRecursively(GameObject obj, LayerMask mask)

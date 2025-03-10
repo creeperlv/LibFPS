@@ -80,7 +80,7 @@ namespace LibFPS.Gameplay.Data
 		}
 	}
 	[Serializable]
-	public class PhysicMaterial
+	public class PhysicMaterial:MonoBehaviour
 	{
 		public int MaterialID;
 	}
@@ -97,6 +97,7 @@ namespace LibFPS.Gameplay.Data
 		public bool IsUsingMagazine;
 		public int MaxAmmoReserve;
 		public int AmmoPerMagzine;
+		public int SemiAutoBrustCount;
 		public float MinimalFireInterval;
 		public float MaxScatter;
 		public float ScatterPerShot;

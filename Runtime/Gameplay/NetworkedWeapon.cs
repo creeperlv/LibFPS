@@ -2,7 +2,9 @@
 using LibFPS.Gameplay.Effects;
 using LibFPS.Kernel;
 using LibFPS.Kernel.DefinitionManagement;
+using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -14,10 +16,10 @@ namespace LibFPS.Gameplay
 		public BipedPositionType PositionType;
 		public Biped Holder;
 		public BaseEntity HolderEntity;
-		public float MaxAmmo;
 		public NetworkVariable<float> Ammo;
 		public NetworkVariable<bool> IsFireDown = new NetworkVariable<bool>(false, writePerm: NetworkVariableWritePermission.Owner);
 		public Transform FirePoint = null;
+		public Transform EffectPoint = null;
 		public Transform CurrentFirePoint = null;
 		public WeaponMode fireType;
 		public bool IsHeavyWeapon;
@@ -34,12 +36,17 @@ namespace LibFPS.Gameplay
 		private float CamShakeSpeed;
 		private float CameraShakeIntensity;
 		public int FireEffect;
+		public int CurrentMagazine;
+		public int CurrentBackup;
 		public string Animation_Fire;
 		public string Animation_Reload;
+		public List<Renderer> AmmoRenderers;
+		public AmmoDisp AmmoDispType;
 		public override void Start()
 		{
 			base.Start();
 			StartCoroutine(QueryDef());
+			NotifyWeaponAmmo();
 		}
 		public IEnumerator QueryDef()
 		{
@@ -61,6 +68,7 @@ namespace LibFPS.Gameplay
 				yield return null;
 			}
 		}
+		int __semiCount = 0;
 		public override void OnUpdate()
 		{
 			switch (this.CurrentDef.WeaponMode)
@@ -72,11 +80,23 @@ namespace LibFPS.Gameplay
 						if (TimeSinceLastFire > CurrentDef.MinimalFireInterval)
 						{
 							if (TryFire)
-								if (__tryFire == false)
+							{
+
+								if (__tryFire == false || __semiCount < CurrentDef.SemiAutoBrustCount)
 								{
 									__tryFire = true;
 									Fire();
 								}
+							}
+							else if (__tryFire && __semiCount < CurrentDef.SemiAutoBrustCount)
+							{
+								Fire();
+							}
+							else if (__semiCount >= CurrentDef.SemiAutoBrustCount || CurrentMagazine <= 0)
+							{
+								__tryFire = false;
+								__semiCount = 0;
+							}
 						}
 					}
 					break;
@@ -98,10 +118,75 @@ namespace LibFPS.Gameplay
 				CurrentScatter -= CurrentDef.ScatterRecover * Time.deltaTime;
 			}
 		}
+		public void NotifyWeaponAmmo()
+		{
+			switch (AmmoDispType)
+			{
+				case AmmoDisp.None:
+					break;
+				case AmmoDisp.TwoDig:
+					{
+						AmmoRenderers[0].material.SetFloat("_DigitNum", CurrentMagazine % 10);
+						AmmoRenderers[1].material.SetFloat("_DigitNum", Mathf.FloorToInt(CurrentMagazine / 10));
+					}
+					break;
+				case AmmoDisp.ThreeDig:
+					{
+
+						AmmoRenderers[0].material.SetFloat("_DigitNum", CurrentMagazine % 10);
+						AmmoRenderers[1].material.SetFloat("_DigitNum", Mathf.FloorToInt(CurrentMagazine / 10) % 10);
+						AmmoRenderers[2].material.SetFloat("_DigitNum", Mathf.FloorToInt(CurrentMagazine / 100));
+					}
+					break;
+				case AmmoDisp.Liner:
+					break;
+				case AmmoDisp.Text:
+					break;
+				default:
+					break;
+			}
+		}
+		void PlayFireEffect()
+		{
+			if (!LevelCore.Instance.IsNetworked())
+			{
+
+				__localFireEffect();
+			}
+			else
+			{
+				FireEffectRpc();
+			}
+		}
+		void __localFireEffect()
+		{
+
+			LevelCore.Instance.SpawnEffectObjectLocal(FireEffect, EffectPoint);
+		}
+		[Rpc(SendTo.Everyone)]
+		void FireEffectRpc()
+		{
+			__localFireEffect();
+		}
 		void Fire()
 		{
 			TimeSinceLastFire = 0;
+			if (this.CurrentMagazine <= 0)
+			{
+				return;
+			}
 			LevelCore.Instance.SpawnBullet(BulletID, HolderEntity, CurrentFirePoint, CurrentScatter, this.CurrentDef.damageConfig);
+			if (CurrentDef.WeaponMode == WeaponMode.SemiAuto)
+			{
+				if (__semiCount >= CurrentDef.SemiAutoBrustCount)
+				{
+					return;
+				}
+				__semiCount++;
+			}
+			NotifyWeaponAmmo();
+			PlayFireEffect();
+			this.CurrentMagazine--;
 			if (Holder != null)
 			{
 				Holder.UpperAnimator.SetTrigger(Animation_Fire);
@@ -115,6 +200,10 @@ namespace LibFPS.Gameplay
 					effect.SetShake(1f, true, CamShakeDecay, true, CamShakeSpeed, CameraShakeIntensity, CameraShakeIntensity);
 			}
 		}
+	}
+	public enum AmmoDisp
+	{
+		None, TwoDig, ThreeDig, Liner,Text
 	}
 	public enum BipedPositionType
 	{

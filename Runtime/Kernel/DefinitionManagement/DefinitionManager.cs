@@ -22,6 +22,7 @@ namespace LibFPS.Kernel.DefinitionManagement
 				b.Init();
 				return (true, b);
 			});
+			Debug.Log("Def Key COunt:"+HitDefinition.Keys.Count);
 			PhysicsSoundDefinition = RawPhysicsSoundDefinition.Map((a) => a, (b) => {
 				b.Init();
 				return (true, b);

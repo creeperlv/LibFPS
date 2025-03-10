@@ -23,6 +23,8 @@ namespace LibFPS.Gameplay
 		public List<MonoBehaviour> BehaviourToDisable;
 		public List<MonoBehaviour> BehaviourToEnable;
 		public int MaxNormalWeaponCanHold = 2;
+		public Transform FirePoint;
+		public bool UseEntityFirePoint;
 		public NetworkVariable<int> CurrentHoldingWeapon = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 		public List<NetworkedWeapon> WeaponInBag;
 		public Action OnDeath;
