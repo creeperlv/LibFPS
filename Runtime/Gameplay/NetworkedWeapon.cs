@@ -42,6 +42,7 @@ namespace LibFPS.Gameplay
 		public string Animation_Reload;
 		public List<Renderer> AmmoRenderers;
 		public AmmoDisp AmmoDispType;
+		int __semiCount = 0;
 		public override void Start()
 		{
 			base.Start();
@@ -68,7 +69,6 @@ namespace LibFPS.Gameplay
 				yield return null;
 			}
 		}
-		int __semiCount = 0;
 		public override void OnUpdate()
 		{
 			switch (this.CurrentDef.WeaponMode)
@@ -184,9 +184,9 @@ namespace LibFPS.Gameplay
 				}
 				__semiCount++;
 			}
-			NotifyWeaponAmmo();
 			PlayFireEffect();
 			this.CurrentMagazine--;
+			NotifyWeaponAmmo();
 			if (Holder != null)
 			{
 				Holder.UpperAnimator.SetTrigger(Animation_Fire);

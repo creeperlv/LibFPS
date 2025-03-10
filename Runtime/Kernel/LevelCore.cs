@@ -46,7 +46,7 @@ namespace LibFPS.Kernel
 					{
 						if (b.IsHitScan)
 						{
-							Debug.DrawRay(pos.position, pos.forward, Color.red,10);
+							Debug.DrawRay(pos.position, pos.forward, Color.red, 10);
 							if (Physics.Raycast(pos.position, pos.forward, out var hit, HitScanRange, this.ExcludeAirBlock, QueryTriggerInteraction.Ignore))
 							{
 								Debug.Log("Hit Scan hit");
@@ -76,7 +76,7 @@ namespace LibFPS.Kernel
 									{
 										LevelCore.Instance.SpawnEffectObject(HitEffect, hit.point, hit.normal);
 									}
-									Debug.Log("Found Hit Effect="+Hit);
+									Debug.Log("Found Hit Effect=" + Hit);
 								}
 							}
 							return;
@@ -236,8 +236,27 @@ namespace LibFPS.Kernel
 						ReleasePickupable(be.WeaponInBag[i]);
 						be.WeaponInBag.RemoveAt(i);
 					}
+					for (int i = 0; i < be.MaxNormalWeaponCanHold; i++)
+					{
+						if (be.WeaponInBag[i].WeaponDef == nWeapon.WeaponDef)
+						{
+							be.CurrentHoldingWeapon.Value = i;
+							break;
+						}
+					}
 					ReleasePickupable(be.WeaponInBag[be.CurrentHoldingWeapon.Value]);
 					be.WeaponInBag.RemoveAt(be.CurrentHoldingWeapon.Value);
+				}
+				else
+				{
+					if (be.WeaponInBag.Count > 0)
+					{
+						if (be.WeaponInBag[0].WeaponDef == nWeapon.WeaponDef)
+						{
+							ReleasePickupable(be.WeaponInBag[0]);
+							be.WeaponInBag.RemoveAt(0);
+						}
+					}
 				}
 				if (be.CurrentHoldingWeapon.Value < 0)
 				{
@@ -256,6 +275,7 @@ namespace LibFPS.Kernel
 				{
 					nWeapon.CurrentFirePoint = be.FirePoint;
 				}
+				biped.IsPickingUp=true;
 				pickupable.TargetTransform = value;
 				be.WeaponInBag.Add(nWeapon);
 				nWeapon.Holder = biped;

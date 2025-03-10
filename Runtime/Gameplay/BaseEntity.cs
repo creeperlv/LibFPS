@@ -11,6 +11,8 @@ namespace LibFPS.Gameplay
 	public class BaseEntity : NetworkBehaviour
 	{
 		public float MaxHP;
+		public float HPRegen;
+		public float RegenDelay;
 		public float HPDamageIntensity;
 		public float ShieldDamageIntensity;
 		public Biped Biped;
@@ -20,24 +22,35 @@ namespace LibFPS.Gameplay
 		public int TargetReplacementObjectID;
 		public float TimeToDestoryAfterDeath;
 		public List<Rigidbody> RigidbodiesToEnableGravity;
-		public List<MonoBehaviour> BehaviourToDisable;
-		public List<MonoBehaviour> BehaviourToEnable;
+		public List<Behaviour> BehaviourToDisable;
+		public List<Behaviour> BehaviourToEnable;
 		public int MaxNormalWeaponCanHold = 2;
 		public Transform FirePoint;
 		public bool UseEntityFirePoint;
 		public NetworkVariable<int> CurrentHoldingWeapon = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 		public List<NetworkedWeapon> WeaponInBag;
 		public Action OnDeath;
-		private void Update()
+		protected float DamageTime = 0;
+		protected virtual void Update()
 		{
 			if (WeaponInBag.Count > 0)
 			{
 				var currentWeapon = WeaponInBag[CurrentHoldingWeapon.Value];
 				Biped.UpperAnimatorAnimationController = currentWeapon.AnimatorKey;
 			}
+			if (DamageTime < RegenDelay)
+			{
+				DamageTime += Time.deltaTime;
+			}
+			else
+			{
+				if(HP.Value<MaxHP)
+					HP.Value += HPRegen * Time.deltaTime;
+			}
 		}
 		public virtual void DealDamage(DamageConfig config)
 		{
+			DamageTime = 0;
 			ChangeHP(config.HPDamage * HPDamageIntensity + config.ShieldDamage * ShieldDamageIntensity);
 		}
 		public virtual void ChangeHP(float Amount)
@@ -66,6 +79,7 @@ namespace LibFPS.Gameplay
 					foreach (var item in RigidbodiesToEnableGravity)
 					{
 						item.useGravity = true;
+						item.isKinematic = false;
 					}
 					break;
 				default:

@@ -37,6 +37,8 @@ namespace LibFPS.Gameplay
 		public string IsFloating = "IsFloating";
 		public string Floating = "Floating";
 		public bool IsRunning;
+		public bool IsPickingUp;
+		public bool __IsPickingUp;
 		public bool IsCrouch;
 		public Vector2 VerticalRange;
 		public string UpperAnimatorAnimationController;
@@ -67,6 +69,11 @@ namespace LibFPS.Gameplay
 					UpperAnimator.runtimeAnimatorController = __controller;
 					__UpperAnimatorAnimationController = UpperAnimatorAnimationController;
 				}
+			}
+			if (IsPickingUp)
+			{
+				IsPickingUp = false;
+				UpperAnimator.SetTrigger(Pickup);
 			}
 			//MoveDirection = MoveDirection.normalized;
 			float MV = MoveDirection.y;
