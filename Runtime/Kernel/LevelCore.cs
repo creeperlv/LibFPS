@@ -135,6 +135,25 @@ namespace LibFPS.Kernel
 				__object.transform.forward = Face;
 			}
 		}
+		public GameObject SpawnObject(int ID,Transform point, ulong OwnerID = 0)
+		{
+			if (ResourceManagement.ResourceManager.Instance.TryQuerySpawnableObjectsRecursively(ID, out var gObj))
+			{
+				if (IsNetworked())
+				{
+					var __object = NetworkManager.Singleton.SpawnManager.InstantiateAndSpawn(gObj.GetComponent<NetworkObject>(), ownerClientId: OwnerID);
+					RecordObject(__object.gameObject);
+					return __object.gameObject;
+				}
+				else
+				{
+					var __object = Instantiate(gObj, point.position, point.rotation);
+					RecordObject(__object);
+					return __object;
+				}
+			}
+			return null;
+		}
 		public GameObject SpawnObject(int ID, ulong OwnerID = 0)
 		{
 			if (ResourceManagement.ResourceManager.Instance.TryQuerySpawnableObjectsRecursively(ID, out var gObj))
@@ -272,7 +291,7 @@ namespace LibFPS.Kernel
 				{
 					nWeapon.CurrentFirePoint = be.FirePoint;
 				}
-				biped.IsPickingUp=true;
+				biped.IsPickingUp = true;
 				pickupable.TargetTransform = value;
 				be.WeaponInBag.Add(nWeapon);
 				nWeapon.Holder = biped;
@@ -304,6 +323,10 @@ namespace LibFPS.Kernel
 			if (p is NetworkedWeapon nw)
 			{
 				nw.Holder = null;
+				if (nw.CurrentMagazine <= 0 && nw.CurrentBackup <= 0)
+				{
+					Destroy(p.gameObject);
+				}
 			}
 			SetLayerRecursively(p.gameObject, NormalLayer);
 			p.TogglePickupable(true);

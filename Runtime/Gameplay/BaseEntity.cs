@@ -83,6 +83,10 @@ namespace LibFPS.Gameplay
 			if (__isdied) return;
 			__isdied = true;
 			OnDeath?.Invoke();
+			foreach (var item in WeaponInBag)
+			{
+				LevelCore.Instance.ReleasePickupable(item);
+			}
 			switch (deathBehaviour)
 			{
 				case DeathBehaviour.ReplaceObject:
