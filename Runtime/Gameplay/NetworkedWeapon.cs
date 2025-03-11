@@ -176,6 +176,12 @@ namespace LibFPS.Gameplay
 			{
 				return;
 			}
+			if (CurrentFirePoint == null)
+			{
+				__tryFire = false;
+				TryFire = false;
+				CurrentFirePoint = FirePoint;
+			}
 			LevelCore.Instance.SpawnBullet(BulletID, HolderEntity, CurrentFirePoint, CurrentScatter, this.CurrentDef.damageConfig);
 			if (CurrentDef.WeaponMode == WeaponMode.SemiAuto)
 			{
@@ -191,7 +197,8 @@ namespace LibFPS.Gameplay
 			NotifyWeaponAmmo();
 			if (Holder != null)
 			{
-				Holder.UpperAnimator.SetTrigger(Animation_Fire);
+				if (Holder.UpperAnimator != null)
+					Holder.UpperAnimator.SetTrigger(Animation_Fire);
 				CurrentScatter += CurrentDef.ScatterPerShot;
 				if (CurrentScatter > CurrentDef.MaxScatter)
 				{

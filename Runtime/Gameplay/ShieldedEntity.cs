@@ -41,6 +41,7 @@ namespace LibFPS.Gameplay
 			}
 			if (Shield.Value <= 0)
 				ChangeHP(config.HPDamage * HPDamageIntensity);
+			OnBeingDamaged?.Invoke();
 		}
 	}
 }

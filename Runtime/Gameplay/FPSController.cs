@@ -40,12 +40,26 @@ namespace LibFPS.Gameplay
 		}
 		void Start()
 		{
-
 			Instance = this;
 			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
 		}
+		private void OnEnable()
+		{
 
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+		}
+		private void OnDisable()
+		{
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+		}
+		private void OnDestroy()
+		{
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+		}
 		// Update is called once per frame
 		void Update()
 		{

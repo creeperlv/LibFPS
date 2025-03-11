@@ -28,7 +28,7 @@ namespace LibFPS.Kernel
 			PlayerObjectLayer = LayerMask.NameToLayer(PlayerObjectLayerName);
 			NormalLayer = LayerMask.NameToLayer(NormalLayerName);
 		}
-		public void SpawnBullet(int ID, BaseEntity Sender, Transform pos, float RandomizeIntensity, DamageConfig damageConfig, float HitScanRange = 100f)
+		public void SpawnBullet(int ID, BaseEntity Sender, Transform pos, float RandomizeIntensity, DamageConfig damageConfig, float HitScanRange = 200f)
 		{
 			if (ResourceManagement.ResourceManager.Instance.TryQuerySpawnableObjectsRecursively(ID, out var gObj))
 			{

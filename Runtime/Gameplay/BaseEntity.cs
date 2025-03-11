@@ -31,9 +31,19 @@ namespace LibFPS.Gameplay
 		public NetworkVariable<int> CurrentHoldingWeapon = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 		public List<NetworkedWeapon> WeaponInBag;
 		public Action OnDeath;
+		public Action OnBeingDamaged;
 		protected float DamageTime = 0;
+		bool __isdied = false;
 		protected virtual void Update()
 		{
+			if (HP.Value < 0)
+			{
+				if (__isdied == false)
+				{
+					Death();
+				}
+
+			}
 			if (WeaponInBag.Count > 0)
 			{
 				var currentWeapon = WeaponInBag[CurrentHoldingWeapon.Value];
@@ -58,6 +68,7 @@ namespace LibFPS.Gameplay
 		{
 			DamageTime = 0;
 			ChangeHP(config.HPDamage * HPDamageIntensity + config.ShieldDamage * ShieldDamageIntensity);
+			OnBeingDamaged?.Invoke();
 		}
 		public virtual void ChangeHP(float Amount)
 		{
@@ -69,6 +80,8 @@ namespace LibFPS.Gameplay
 		}
 		public void Death()
 		{
+			if (__isdied) return;
+			__isdied = true;
 			OnDeath?.Invoke();
 			switch (deathBehaviour)
 			{
